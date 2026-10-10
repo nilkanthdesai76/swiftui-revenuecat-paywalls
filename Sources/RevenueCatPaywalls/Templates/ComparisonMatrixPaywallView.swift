@@ -194,42 +194,67 @@ public struct ComparisonMatrixPaywallView: View {
     // MARK: - Plan Cards (Static Bottom Dock)
     
     private var planSelectionCards: some View {
-        HStack(spacing: 10) {
-            ForEach(manager.packages.filter { $0.kind == .annual || $0.kind == .monthly }) { package in
+        VStack(spacing: 8) {
+            ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(package.kind == .annual ? "Annual" : "Monthly")
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundColor(.primary)
+                    HStack(spacing: 12) {
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .secondary.opacity(0.35))
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(package.title)
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                                
+                                if let badge = package.badgeText {
+                                    DiscountBadgeView(text: badge, backgroundColor: configuration.primaryThemeColor)
+                                }
+                            }
                             
-                            Spacer()
-                            
-                            if let badge = package.badgeText {
-                                DiscountBadgeView(text: badge, backgroundColor: configuration.primaryThemeColor)
+                            if let weekly = package.weeklyEquivalentString {
+                                Text(weekly)
+                                    .font(.system(size: 11, weight: .regular))
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                            } else if let trial = package.introTrialText {
+                                Text(trial)
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundColor(configuration.primaryThemeColor)
+                                    .lineLimit(1)
                             }
                         }
                         
-                        Text(package.localizedPriceString)
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
+                        Spacer()
                         
-                        Text(package.weeklyEquivalentString ?? package.periodSubtitle)
-                            .font(.system(size: 10, weight: .regular))
-                            .foregroundColor(.secondary)
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text(package.localizedPriceString)
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundColor(isSelected ? configuration.primaryThemeColor : .primary)
+                                .lineLimit(1)
+                            
+                            Text(package.periodSubtitle)
+                                .font(.system(size: 10, weight: .regular))
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     }
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSystemBackground)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
+                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.secondary.opacity(0.12), lineWidth: isSelected ? 2 : 1)
                             )
                     )
                 }

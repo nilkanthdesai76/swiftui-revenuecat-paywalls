@@ -191,45 +191,70 @@ public struct CyberpunkPaywallView: View {
     // MARK: - Plans (Static Bottom Dock)
     
     private var plansSection: some View {
-        HStack(spacing: 10) {
+        VStack(spacing: 8) {
             ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Text(package.kind == .annual ? "ANNUAL" : package.kind == .monthly ? "MONTH" : "LIFETIME")
-                                .font(.system(size: 11, weight: .black, design: .monospaced))
-                                .foregroundColor(isSelected ? configuration.primaryThemeColor : .white)
+                    HStack(spacing: 12) {
+                        Text(isSelected ? "[x]" : "[ ]")
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .white.opacity(0.4))
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(package.title.uppercased())
+                                    .font(.system(size: 13, weight: .black, design: .monospaced))
+                                    .foregroundColor(isSelected ? configuration.primaryThemeColor : .white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                                
+                                if let badge = package.badgeText {
+                                    Text("[\(badge)]")
+                                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                        .foregroundColor(configuration.secondaryThemeColor)
+                                        .lineLimit(1)
+                                }
+                            }
                             
-                            Spacer()
-                            
-                            if let badge = package.badgeText {
-                                Text("[\(badge)]")
-                                    .font(.system(size: 8.5, weight: .bold, design: .monospaced))
+                            if let weekly = package.weeklyEquivalentString {
+                                Text(weekly)
+                                    .font(.system(size: 10, weight: .regular, design: .monospaced))
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                            } else if let trial = package.introTrialText {
+                                Text(trial.uppercased())
+                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
                                     .foregroundColor(configuration.secondaryThemeColor)
+                                    .lineLimit(1)
                             }
                         }
                         
-                        Text(package.localizedPriceString)
-                            .font(.system(size: 16, weight: .black, design: .monospaced))
-                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .white)
+                        Spacer()
                         
-                        Text(package.weeklyEquivalentString ?? package.periodSubtitle)
-                            .font(.system(size: 9.5, weight: .regular, design: .monospaced))
-                            .foregroundColor(.white.opacity(0.55))
-                            .lineLimit(1)
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text(package.localizedPriceString)
+                                .font(.system(size: 16, weight: .black, design: .monospaced))
+                                .foregroundColor(isSelected ? configuration.primaryThemeColor : .white)
+                                .lineLimit(1)
+                            
+                            Text(package.periodSubtitle)
+                                .font(.system(size: 9.5, weight: .regular, design: .monospaced))
+                                .foregroundColor(.white.opacity(0.55))
+                                .lineLimit(1)
+                        }
                     }
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(isSelected ? configuration.primaryThemeColor.opacity(0.12) : Color.white.opacity(0.02))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.15), lineWidth: isSelected ? 2 : 1)
+                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.12), lineWidth: isSelected ? 1.5 : 1)
                             )
                     )
                 }

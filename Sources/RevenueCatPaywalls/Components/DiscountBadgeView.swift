@@ -22,6 +22,8 @@ public struct DiscountBadgeView: View {
         Text(text)
             .font(.system(size: 11, weight: .bold, design: .rounded))
             .foregroundColor(textColor)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
             .padding(.horizontal, 9)
             .padding(.vertical, 4)
             .background(

@@ -171,49 +171,73 @@ public struct CompactSheetPaywallView: View {
     // MARK: - Plan Selection Cards
     
     private var planSelectionCards: some View {
-        HStack(spacing: 12) {
-            ForEach(manager.packages.filter { $0.kind == .annual || $0.kind == .monthly }) { package in
+        VStack(spacing: 8) {
+            ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    VStack(spacing: 3) {
-                        if let badge = package.badgeText {
-                            Text(badge)
-                                .font(.system(size: 9.5, weight: .black, design: .rounded))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(configuration.primaryThemeColor, in: Capsule())
-                        } else {
-                            Text("STANDARD")
-                                .font(.system(size: 9.5, weight: .bold, design: .rounded))
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
+                    HStack(spacing: 12) {
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .secondary.opacity(0.35))
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(package.title)
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                                
+                                if let badge = package.badgeText {
+                                    Text(badge)
+                                        .font(.system(size: 9, weight: .black, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(configuration.primaryThemeColor, in: Capsule())
+                                        .lineLimit(1)
+                                }
+                            }
+                            
+                            if let weekly = package.weeklyEquivalentString {
+                                Text(weekly)
+                                    .font(.system(size: 11, weight: .regular))
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                            } else if let trial = package.introTrialText {
+                                Text(trial)
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundColor(configuration.primaryThemeColor)
+                                    .lineLimit(1)
+                            }
                         }
                         
-                        Text(package.kind == .annual ? "Annual" : "Monthly")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
+                        Spacer()
                         
-                        Text(package.localizedPriceString)
-                            .font(.system(size: 17, weight: .black, design: .rounded))
-                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .primary)
-                        
-                        Text(package.periodSubtitle)
-                            .font(.system(size: 10, weight: .regular))
-                            .foregroundColor(.secondary)
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text(package.localizedPriceString)
+                                .font(.system(size: 16, weight: .black, design: .rounded))
+                                .foregroundColor(isSelected ? configuration.primaryThemeColor : .primary)
+                                .lineLimit(1)
+                            
+                            Text(package.periodSubtitle)
+                                .font(.system(size: 10, weight: .regular))
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     }
+                    .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSystemBackground)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
+                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.secondary.opacity(0.12), lineWidth: isSelected ? 2 : 1)
                             )
                     )
                 }

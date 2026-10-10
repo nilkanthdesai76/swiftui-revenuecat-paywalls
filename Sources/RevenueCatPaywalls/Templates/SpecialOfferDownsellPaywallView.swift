@@ -246,6 +246,8 @@ public struct SpecialOfferDownsellPaywallView: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(configuration.primaryThemeColor, in: Capsule())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
                     .shimmering(duration: 1.8)
                 
                 Spacer()
@@ -253,6 +255,7 @@ public struct SpecialOfferDownsellPaywallView: View {
                 Text("ONE-TIME PAYMENT")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundColor(configuration.secondaryThemeColor)
+                    .lineLimit(1)
             }
             
             HStack(alignment: .lastTextBaseline, spacing: 10) {
@@ -260,10 +263,14 @@ public struct SpecialOfferDownsellPaywallView: View {
                     Text(pkg.title)
                         .font(.system(size: 20, weight: .black, design: .rounded))
                         .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
                     
                     Text("Unlock forever • All future updates included")
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.white.opacity(0.65))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
                 }
                 
                 Spacer()
@@ -273,10 +280,13 @@ public struct SpecialOfferDownsellPaywallView: View {
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .strikethrough(true, color: .red)
                         .foregroundColor(.white.opacity(0.4))
+                        .lineLimit(1)
                     
                     Text(pkg.localizedPriceString)
                         .font(.system(size: 28, weight: .black, design: .rounded))
                         .foregroundColor(configuration.secondaryThemeColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
                 }
             }
         }

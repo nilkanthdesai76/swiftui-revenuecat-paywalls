@@ -191,6 +191,8 @@ public struct TimelineTrialPaywallView: View {
                             Text(package.title)
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
                             
                             if let badge = package.badgeText {
                                 DiscountBadgeView(text: badge, backgroundColor: configuration.primaryThemeColor)
@@ -201,6 +203,8 @@ public struct TimelineTrialPaywallView: View {
                             Text(weekly)
                                 .font(.system(size: 11, weight: .regular))
                                 .foregroundColor(.secondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
                         }
                     }
                     
@@ -210,10 +214,12 @@ public struct TimelineTrialPaywallView: View {
                         Text(package.localizedPriceString)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
+                            .lineLimit(1)
                         
                         Text(package.periodSubtitle)
                             .font(.system(size: 10, weight: .regular))
                             .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
                 }
                 .padding(12)
