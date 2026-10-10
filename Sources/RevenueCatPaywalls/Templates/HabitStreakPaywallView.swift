@@ -8,6 +8,10 @@ public struct HabitStreakPaywallView: View {
     public var onDismiss: () -> Void
     public var onPurchaseSuccess: (() -> Void)?
     
+    @State private var flameScale: CGFloat = 1.0
+    @State private var sparkleRotation: Double = 0.0
+    @State private var selectedMilestone: Int = 1
+    
     public init(
         manager: PaywallManager,
         configuration: PaywallConfiguration = PaywallConfiguration(
@@ -32,11 +36,10 @@ public struct HabitStreakPaywallView: View {
     
     public var body: some View {
         ZStack {
-            // Warm gradient background
             backgroundView
             
             VStack(spacing: 0) {
-                // Top header
+                // Top Header
                 PaywallHeaderView(
                     delaySeconds: configuration.closeDelaySeconds,
                     tintColor: .white,
@@ -50,47 +53,61 @@ public struct HabitStreakPaywallView: View {
                     onDismiss: onDismiss
                 )
                 
+                // Top Scrollable Content
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 22) {
-                        // Gamified Streak Hero
+                    VStack(spacing: 20) {
                         streakHeroVisual
-                        
-                        // Milestone Roadmap
                         milestoneRoadmapSection
-                        
-                        // Feature List
                         featuresSection
-                        
-                        // Testimonial Spotlight
                         testimonialCard
-                        
-                        // Plan Selector
-                        planSelectorSection
-                        
-                        // CTA
-                        ctaButtonSection
-                        
-                        // Legal Footer
-                        PaywallLegalFooterView(
-                            termsURL: configuration.termsURL,
-                            privacyURL: configuration.privacyURL,
-                            textColor: .white.opacity(0.6),
-                            onRestore: {
-                                Task {
-                                    if await manager.restorePurchases() {
-                                        onPurchaseSuccess?()
-                                    }
-                                }
-                            }
-                        )
-                        .padding(.top, 4)
-                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 }
+                
+                // Static Bottom Dock
+                VStack(spacing: 12) {
+                    planSelectorSection
+                    ctaButtonSection
+                    
+                    PaywallLegalFooterView(
+                        termsURL: configuration.termsURL,
+                        privacyURL: configuration.privacyURL,
+                        textColor: .white.opacity(0.55),
+                        onRestore: {
+                            Task {
+                                if await manager.restorePurchases() {
+                                    onPurchaseSuccess?()
+                                }
+                            }
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(Color(red: 0.07, green: 0.07, blue: 0.09))
+                        .overlay(
+                            Rectangle()
+                                .fill(Color.white.opacity(0.1))
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                        .ignoresSafeArea(edges: .bottom)
+                )
             }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                flameScale = 1.15
+            }
+            withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: false)) {
+                sparkleRotation = 360.0
+            }
+        }
         .alert("Notice", isPresented: $manager.showErrorAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -101,7 +118,7 @@ public struct HabitStreakPaywallView: View {
     // MARK: - Background
     
     private var backgroundView: some View {
-        Color(red: 0.08, green: 0.08, blue: 0.10)
+        Color(red: 0.07, green: 0.07, blue: 0.09)
             .ignoresSafeArea()
             .overlay(
                 RadialGradient(
@@ -119,7 +136,16 @@ public struct HabitStreakPaywallView: View {
     private var streakHeroVisual: some View {
         VStack(spacing: 12) {
             ZStack {
-                // Outer animated flame ring
+                // Orbiting sparkles
+                ForEach(0..<4, id: \.self) { i in
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 10))
+                        .foregroundColor(configuration.secondaryThemeColor.opacity(0.7))
+                        .offset(x: 48 * cos(Double(i) * .pi / 2 + sparkleRotation * .pi / 180),
+                                y: 48 * sin(Double(i) * .pi / 2 + sparkleRotation * .pi / 180))
+                }
+                
+                // Outer ring
                 Circle()
                     .stroke(
                         LinearGradient(
@@ -136,6 +162,7 @@ public struct HabitStreakPaywallView: View {
                     Image(systemName: "flame.fill")
                         .font(.system(size: 30))
                         .foregroundColor(configuration.secondaryThemeColor)
+                        .scaleEffect(flameScale)
                     
                     Text("30 DAYS")
                         .font(.system(size: 9, weight: .black, design: .rounded))
@@ -162,11 +189,11 @@ public struct HabitStreakPaywallView: View {
     
     private var milestoneRoadmapSection: some View {
         HStack(spacing: 8) {
-            milestonePill(day: "Day 1", label: "Kickoff", icon: "sparkles", done: true)
+            milestonePill(index: 1, day: "Day 1", label: "Kickoff", icon: "sparkles")
             milestoneDivider
-            milestonePill(day: "Day 14", label: "Lock-In", icon: "brain.head.profile", done: true)
+            milestonePill(index: 2, day: "Day 14", label: "Lock-In", icon: "brain.head.profile")
             milestoneDivider
-            milestonePill(day: "Day 30", label: "Mastery", icon: "trophy.fill", done: false)
+            milestonePill(index: 3, day: "Day 30", label: "Mastery", icon: "trophy.fill")
         }
         .padding(14)
         .background(
@@ -179,21 +206,32 @@ public struct HabitStreakPaywallView: View {
         )
     }
     
-    private func milestonePill(day: String, label: String, icon: String, done: Bool) -> some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(done ? configuration.secondaryThemeColor : .white.opacity(0.4))
-            
-            Text(day)
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
-            
-            Text(label)
-                .font(.system(size: 10, weight: .regular))
-                .foregroundColor(.white.opacity(0.6))
+    private func milestonePill(index: Int, day: String, label: String, icon: String) -> some View {
+        let isSelected = selectedMilestone == index
+        
+        return Button(action: {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                selectedMilestone = index
+            }
+            HapticFeedback.light()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(isSelected ? configuration.secondaryThemeColor : .white.opacity(0.4))
+                
+                Text(day)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                
+                Text(label)
+                    .font(.system(size: 10, weight: .regular))
+                    .foregroundColor(.white.opacity(0.6))
+            }
+            .frame(maxWidth: .infinity)
+            .scaleEffect(isSelected ? 1.05 : 1.0)
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.plain)
     }
     
     private var milestoneDivider: some View {
@@ -232,7 +270,7 @@ public struct HabitStreakPaywallView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color.white.opacity(0.04))
@@ -248,7 +286,7 @@ public struct HabitStreakPaywallView: View {
     private var testimonialCard: some View {
         Group {
             if let first = testimonials.first {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 3) {
                         ForEach(0..<first.stars, id: \.self) { _ in
                             Image(systemName: "star.fill")
@@ -267,12 +305,8 @@ public struct HabitStreakPaywallView: View {
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.white.opacity(0.85))
                         .italic()
-                    
-                    Text("— \(first.authorName)")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.6))
                 }
-                .padding(14)
+                .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .fill(Color.white.opacity(0.04))
@@ -281,57 +315,50 @@ public struct HabitStreakPaywallView: View {
         }
     }
     
-    // MARK: - Plans
+    // MARK: - Plans (Static Bottom Dock)
     
     private var planSelectorSection: some View {
-        VStack(spacing: 10) {
+        HStack(spacing: 10) {
             ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .foregroundColor(isSelected ? configuration.secondaryThemeColor : .white.opacity(0.3))
-                            .font(.system(size: 18))
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text(package.title)
-                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                    .foregroundColor(.white)
-                                
-                                if let badge = package.badgeText {
-                                    DiscountBadgeView(text: badge, backgroundColor: configuration.primaryThemeColor)
-                                }
-                            }
-                            
-                            if let weekly = package.weeklyEquivalentString {
-                                Text(weekly)
-                                    .font(.system(size: 11, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(package.localizedPriceString)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            Text(package.kind == .annual ? "Annual" : package.kind == .monthly ? "Monthly" : "Lifetime")
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                             
-                            Text(package.periodSubtitle)
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.white.opacity(0.6))
+                            Spacer()
+                            
+                            if let badge = package.badgeText {
+                                Text(badge)
+                                    .font(.system(size: 8.5, weight: .black, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(configuration.primaryThemeColor, in: Capsule())
+                            }
                         }
+                        
+                        Text(package.localizedPriceString)
+                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .foregroundColor(isSelected ? configuration.secondaryThemeColor : .white)
+                        
+                        Text(package.weeklyEquivalentString ?? package.periodSubtitle)
+                            .font(.system(size: 10, weight: .regular))
+                            .foregroundColor(.white.opacity(0.6))
+                            .lineLimit(1)
                     }
-                    .padding(14)
+                    .padding(11)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.white.opacity(0.10) : Color.white.opacity(0.03))
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.15) : Color.white.opacity(0.04))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
                                     .stroke(isSelected ? configuration.secondaryThemeColor : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 1)
                             )
                     )
@@ -377,7 +404,7 @@ public struct HabitStreakPaywallView: View {
                     }
                 }
             }
-            .frame(height: 54)
+            .frame(height: 52)
         }
         .disabled(manager.isPurchasing)
     }

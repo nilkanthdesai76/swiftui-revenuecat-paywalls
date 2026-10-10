@@ -9,18 +9,20 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
     case mediaWaveform = "Media Waveform & Pulse"
     case cyberpunk = "Cyberpunk Neo-Brutalist"
     case compactSheet = "Compact Sheet Modal"
+    case specialOffer = "Exit-Offer Special Downsell"
     
     public var id: String { rawValue }
     
     public var subtitle: String {
         switch self {
-        case .bento: return "Spatial blur tiles & interactive micro-widgets for AI / productivity"
-        case .timeline: return "3-step visual trial timeline with toggle (App Store #1 layout)"
-        case .habitStreak: return "Gamified streak flame rings & milestone roadmap for fitness/habits"
-        case .comparisonMatrix: return "Side-by-side Free vs Pro table with checkmarks & feature rows"
-        case .mediaWaveform: return "Pulsing audio visualizer & studio master tracks for audio/music"
-        case .cyberpunk: return "High-contrast neon borders & monospaced tags for dev/crypto tools"
-        case .compactSheet: return "Sleek half-sheet with biometrics icon & 1-tap fast checkout"
+        case .bento: return "Spatial blur tiles & interactive micro-widgets with pinned dock"
+        case .timeline: return "3-step visual trial timeline + interactive toggle (App Store #1 layout)"
+        case .habitStreak: return "Gamified streak flame rings & milestone roadmap with static plans"
+        case .comparisonMatrix: return "Side-by-side Free vs Pro table with checkmark highlights & sticky CTA"
+        case .mediaWaveform: return "Tap-reactive audio equalizer visualizer & studio master tracks"
+        case .cyberpunk: return "Laser scanner line & terminal text cursor for dev/crypto tools"
+        case .compactSheet: return "Biometric padlock unlock animation with fast 1-tap checkout"
+        case .specialOffer: return "Exit-intent 1-offering deal with live ticking timer & 75% OFF badge"
         }
     }
     
@@ -32,7 +34,8 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .comparisonMatrix: return "tablecells.badge.ellipsis"
         case .mediaWaveform: return "waveform"
         case .cyberpunk: return "terminal.fill"
-        case .compactSheet: return "doc.text.fill"
+        case .compactSheet: return "lock.shield.fill"
+        case .specialOffer: return "tag.fill"
         }
     }
     
@@ -45,6 +48,7 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .mediaWaveform: return Color(red: 0.02, green: 0.85, blue: 0.83)
         case .cyberpunk: return Color(red: 0.1, green: 0.95, blue: 0.55)
         case .compactSheet: return Color(red: 0.18, green: 0.65, blue: 0.45)
+        case .specialOffer: return Color(red: 0.95, green: 0.25, blue: 0.35)
         }
     }
     
@@ -54,15 +58,18 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .timeline: return "Highest Conversion"
         case .habitStreak: return "Gamified"
         case .comparisonMatrix: return "SaaS / Pro"
-        case .mediaWaveform: return "Dark Studio"
+        case .mediaWaveform: return "Interactive Audio"
         case .cyberpunk: return "Neo-Brutalism"
-        case .compactSheet: return "Quick Modal"
+        case .compactSheet: return "Biometric Sheet"
+        case .specialOffer: return "Exit Downsell"
         }
     }
 }
 
 public struct ShowcaseCatalogView: View {
     @State private var selectedTemplate: PaywallTemplateType?
+    @State private var showDownsellSheet: Bool = false
+    @State private var enableDownsellOnExit: Bool = true
     @State private var isMockMode: Bool = true
     @State private var revenueCatApiKey: String = ""
     @State private var showSettingsSheet: Bool = false
@@ -74,25 +81,28 @@ public struct ShowcaseCatalogView: View {
     public var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
+                VStack(spacing: 20) {
                     // Hero Intro Banner
                     heroBanner
+                    
+                    // Exit Downsell Status Banner
+                    downsellToggleBanner
                     
                     // Mode Switcher Banner
                     modeStatusCard
                     
                     // Template Gallery Cards
-                    VStack(spacing: 16) {
+                    VStack(spacing: 14) {
                         ForEach(PaywallTemplateType.allCases) { template in
                             templateCard(template)
                         }
                     }
                     
                     // Footer
-                    Text("SwiftUI RevenueCat Paywalls • Designed for maximum conversion")
+                    Text("SwiftUI RevenueCat Paywalls • Pinned Bottom Dock & Micro-Animations")
                         .font(.system(size: 11, weight: .regular))
                         .foregroundColor(.secondary)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 16)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -111,6 +121,16 @@ public struct ShowcaseCatalogView: View {
             }
             .fullScreenCover(item: $selectedTemplate) { template in
                 destinationPaywall(for: template)
+            }
+            .sheet(isPresented: $showDownsellSheet) {
+                SpecialOfferDownsellPaywallView(
+                    manager: PaywallManager(isMockMode: isMockMode),
+                    onDismiss: { showDownsellSheet = false },
+                    onPurchaseSuccess: {
+                        showDownsellSheet = false
+                        triggerSuccessAlert("Lifetime Exit Deal Claimed at 75% OFF!")
+                    }
+                )
             }
             .sheet(isPresented: $showSettingsSheet) {
                 settingsSheet
@@ -137,7 +157,7 @@ public struct ShowcaseCatalogView: View {
                 
                 Spacer()
                 
-                Text("7 Archetypes")
+                Text("8 Archetypes")
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(.secondary)
             }
@@ -146,7 +166,7 @@ public struct ShowcaseCatalogView: View {
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundColor(.primary)
             
-            Text("Designer-grade, interactive paywalls for any iOS app. Tap any card below to interact with live package purchasing, trial toggling, and restore flows.")
+            Text("Sticky bottom docks keep pricing and CTA pinned. Top features scroll independently with interactive micro-animations.")
                 .font(.system(size: 13, weight: .regular))
                 .foregroundColor(.secondary)
                 .lineSpacing(3)
@@ -156,6 +176,43 @@ public struct ShowcaseCatalogView: View {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(Color.appSecondaryGroupedBackground)
                 .shadow(color: Color.black.opacity(0.04), radius: 10, y: 4)
+        )
+    }
+    
+    // MARK: - Downsell Toggle Banner
+    
+    private var downsellToggleBanner: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color(red: 0.95, green: 0.25, blue: 0.35).opacity(0.15))
+                    .frame(width: 36, height: 36)
+                
+                Image(systemName: "tag.fill")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(Color(red: 0.95, green: 0.25, blue: 0.35))
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Exit-Offer Downsell Trigger")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+                
+                Text(enableDownsellOnExit ? "Closing any paywall presents the 75% off lifetime offer" : "Closing paywall dismisses immediately")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Toggle("", isOn: $enableDownsellOnExit)
+                .labelsHidden()
+                .tint(Color(red: 0.95, green: 0.25, blue: 0.35))
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.appSecondaryGroupedBackground)
         )
     }
     
@@ -186,7 +243,7 @@ public struct ShowcaseCatalogView: View {
             .buttonStyle(.bordered)
             .tint(isMockMode ? .orange : .green)
         }
-        .padding(14)
+        .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.appSecondaryGroupedBackground)
@@ -201,26 +258,24 @@ public struct ShowcaseCatalogView: View {
             selectedTemplate = template
         }) {
             HStack(spacing: 16) {
-                // Leading Icon
                 ZStack {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .fill(template.accentColor.opacity(0.15))
-                        .frame(width: 48, height: 48)
+                        .frame(width: 46, height: 46)
                     
                     Image(systemName: template.icon)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 19, weight: .bold))
                         .foregroundColor(template.accentColor)
                 }
                 
-                // Info
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
                         Text(template.rawValue)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
                         Text(template.tag)
-                            .font(.system(size: 9.5, weight: .bold, design: .rounded))
+                            .font(.system(size: 9.0, weight: .bold, design: .rounded))
                             .foregroundColor(template.accentColor)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -228,7 +283,7 @@ public struct ShowcaseCatalogView: View {
                     }
                     
                     Text(template.subtitle)
-                        .font(.system(size: 12, weight: .regular))
+                        .font(.system(size: 11.5, weight: .regular))
                         .foregroundColor(.secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -237,14 +292,14 @@ public struct ShowcaseCatalogView: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.secondary.opacity(0.5))
             }
-            .padding(16)
+            .padding(14)
             .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(Color.appSecondaryGroupedBackground)
-                    .shadow(color: Color.black.opacity(0.03), radius: 8, y: 3)
+                    .shadow(color: Color.black.opacity(0.03), radius: 6, y: 2)
             )
         }
         .buttonStyle(.plain)
@@ -260,7 +315,7 @@ public struct ShowcaseCatalogView: View {
         case .bento:
             BentoPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .bento) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Bento Paywall purchase simulated successfully!")
@@ -270,7 +325,7 @@ public struct ShowcaseCatalogView: View {
         case .timeline:
             TimelineTrialPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .timeline) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("7-Day Free Trial activated successfully!")
@@ -280,7 +335,7 @@ public struct ShowcaseCatalogView: View {
         case .habitStreak:
             HabitStreakPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .habitStreak) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Habit Streak Pass activated!")
@@ -290,7 +345,7 @@ public struct ShowcaseCatalogView: View {
         case .comparisonMatrix:
             ComparisonMatrixPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .comparisonMatrix) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Upgraded to Pro via Comparison Matrix!")
@@ -300,7 +355,7 @@ public struct ShowcaseCatalogView: View {
         case .mediaWaveform:
             MediaWaveformPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .mediaWaveform) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Studio Master Access unlocked!")
@@ -310,7 +365,7 @@ public struct ShowcaseCatalogView: View {
         case .cyberpunk:
             CyberpunkPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .cyberpunk) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Root Access Granted!")
@@ -320,12 +375,33 @@ public struct ShowcaseCatalogView: View {
         case .compactSheet:
             CompactSheetPaywallView(
                 manager: manager,
-                onDismiss: { selectedTemplate = nil },
+                onDismiss: { handlePaywallDismissal(from: .compactSheet) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Fast checkout completed!")
                 }
             )
+            
+        case .specialOffer:
+            SpecialOfferDownsellPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Lifetime Deal Claimed at 75% OFF!")
+                }
+            )
+        }
+    }
+    
+    private func handlePaywallDismissal(from template: PaywallTemplateType) {
+        selectedTemplate = nil
+        
+        // If exit downsell is enabled and not closing downsell itself, present the special offer!
+        if enableDownsellOnExit && template != .specialOffer {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                showDownsellSheet = true
+            }
         }
     }
     
@@ -349,10 +425,14 @@ public struct ShowcaseCatalogView: View {
                     }
                 }
                 
+                Section("Conversion Mechanics") {
+                    Toggle("Enable Downsell on Exit", isOn: $enableDownsellOnExit)
+                }
+                
                 Section("About Paywall Studio") {
                     LabeledContent("Total Templates", value: "\(PaywallTemplateType.allCases.count)")
                     LabeledContent("RevenueCat SDK", value: "v5.0+")
-                    LabeledContent("SwiftUI Target", value: "iOS 16+ / macOS 13+")
+                    LabeledContent("Layout Engine", value: "Pinned Bottom Dock")
                 }
             }
             .navigationTitle("Paywall Settings")

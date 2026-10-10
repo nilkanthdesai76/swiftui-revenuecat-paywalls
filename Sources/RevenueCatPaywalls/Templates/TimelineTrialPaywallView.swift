@@ -7,6 +7,8 @@ public struct TimelineTrialPaywallView: View {
     public var onDismiss: () -> Void
     public var onPurchaseSuccess: (() -> Void)?
     
+    @State private var nodePulse: Bool = false
+    
     public init(
         manager: PaywallManager,
         configuration: PaywallConfiguration = PaywallConfiguration(
@@ -28,11 +30,10 @@ public struct TimelineTrialPaywallView: View {
     
     public var body: some View {
         ZStack {
-            // Elegant background
             backgroundView
             
             VStack(spacing: 0) {
-                // Top header with delayed close button
+                // Top Header
                 PaywallHeaderView(
                     delaySeconds: configuration.closeDelaySeconds,
                     tintColor: .primary,
@@ -46,46 +47,61 @@ public struct TimelineTrialPaywallView: View {
                     onDismiss: onDismiss
                 )
                 
+                // Top Scrollable Content
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        // Title Section
                         headerSection
                         
-                        // Apple 3-Step Interactive Timeline
+                        // Interactive Timeline with pulsing nodes
                         TrialTimelineView(
                             steps: timelineSteps,
                             accentColor: configuration.primaryThemeColor
                         )
+                        .scaleEffect(nodePulse ? 1.01 : 1.0)
                         
-                        // Trial Toggle Switch Card
-                        trialToggleCard
-                        
-                        // Selected Plan Summary
-                        planSummaryCard
-                        
-                        // CTA Button
-                        ctaButtonSection
-                        
-                        // Reassurance Note
                         reassuranceFooter
-                        
-                        // Legal Footer
-                        PaywallLegalFooterView(
-                            termsURL: configuration.termsURL,
-                            privacyURL: configuration.privacyURL,
-                            onRestore: {
-                                Task {
-                                    if await manager.restorePurchases() {
-                                        onPurchaseSuccess?()
-                                    }
-                                }
-                            }
-                        )
-                        .padding(.top, 4)
-                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 }
+                
+                // Static Sticky Bottom Dock
+                VStack(spacing: 12) {
+                    trialToggleCard
+                    planSummaryCard
+                    ctaButtonSection
+                    
+                    PaywallLegalFooterView(
+                        termsURL: configuration.termsURL,
+                        privacyURL: configuration.privacyURL,
+                        onRestore: {
+                            Task {
+                                if await manager.restorePurchases() {
+                                    onPurchaseSuccess?()
+                                }
+                            }
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(Color.appSecondaryGroupedBackground)
+                        .overlay(
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.15))
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                        .ignoresSafeArea(edges: .bottom)
+                )
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
+                nodePulse = true
             }
         }
         .alert("Notice", isPresented: $manager.showErrorAlert) {
@@ -114,7 +130,7 @@ public struct TimelineTrialPaywallView: View {
     // MARK: - Header
     
     private var headerSection: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             Image(systemName: configuration.appIconSystemName)
                 .font(.system(size: 34, weight: .bold))
                 .foregroundColor(configuration.primaryThemeColor)
@@ -126,7 +142,7 @@ public struct TimelineTrialPaywallView: View {
                 .multilineTextAlignment(.center)
             
             Text(configuration.appSubtitle)
-                .font(.system(size: 14, weight: .regular))
+                .font(.system(size: 13, weight: .regular))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
@@ -137,13 +153,13 @@ public struct TimelineTrialPaywallView: View {
     
     private var trialToggleCard: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Enable 7-Day Free Trial")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundColor(.primary)
                 
                 Text(manager.isFreeTrialEnabled ? "You won't be charged anything today" : "Instant discount applied directly")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.secondary)
             }
             
@@ -156,11 +172,11 @@ public struct TimelineTrialPaywallView: View {
             .labelsHidden()
             .tint(configuration.primaryThemeColor)
         }
-        .padding(16)
+        .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.appSecondaryGroupedBackground)
-                .shadow(color: Color.black.opacity(0.04), radius: 8, y: 3)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.appSystemBackground)
+                .shadow(color: Color.black.opacity(0.03), radius: 6, y: 2)
         )
     }
     
@@ -170,10 +186,10 @@ public struct TimelineTrialPaywallView: View {
         Group {
             if let package = manager.selectedPackage {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 6) {
                             Text(package.title)
-                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
                             
                             if let badge = package.badgeText {
@@ -183,30 +199,30 @@ public struct TimelineTrialPaywallView: View {
                         
                         if let weekly = package.weeklyEquivalentString {
                             Text(weekly)
-                                .font(.system(size: 12, weight: .regular))
+                                .font(.system(size: 11, weight: .regular))
                                 .foregroundColor(.secondary)
                         }
                     }
                     
                     Spacer()
                     
-                    VStack(alignment: .trailing, spacing: 2) {
+                    VStack(alignment: .trailing, spacing: 1) {
                         Text(package.localizedPriceString)
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
                         Text(package.periodSubtitle)
-                            .font(.system(size: 11, weight: .regular))
+                            .font(.system(size: 10, weight: .regular))
                             .foregroundColor(.secondary)
                     }
                 }
-                .padding(16)
+                .padding(12)
                 .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.appSecondaryGroupedBackground)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.appSystemBackground)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(configuration.primaryThemeColor.opacity(0.4), lineWidth: 1.5)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(configuration.primaryThemeColor.opacity(0.35), lineWidth: 1.5)
                         )
                 )
             }
@@ -230,18 +246,16 @@ public struct TimelineTrialPaywallView: View {
                     .shadow(color: configuration.primaryThemeColor.opacity(0.35), radius: 10, y: 5)
                 
                 if manager.isPurchasing {
-                    ProgressView()
-                        .tint(.white)
+                    ProgressView().tint(.white)
                 } else {
                     Text(manager.isFreeTrialEnabled ? "Start 7-Day Free Trial" : "Continue to Payment")
                         .font(.system(size: 17, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                 }
             }
-            .frame(height: 54)
+            .frame(height: 52)
         }
         .disabled(manager.isPurchasing)
-        .padding(.top, 4)
     }
     
     // MARK: - Reassurance

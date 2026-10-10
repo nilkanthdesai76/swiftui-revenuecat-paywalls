@@ -7,7 +7,9 @@ public struct BentoPaywallView: View {
     public var onDismiss: () -> Void
     public var onPurchaseSuccess: (() -> Void)?
     
-    @State private var hoveredFeatureId: UUID?
+    @State private var selectedTileId: UUID?
+    @State private var isIconFloating: Bool = false
+    @State private var glowOpacity: Double = 0.5
     
     public init(
         manager: PaywallManager,
@@ -47,41 +49,61 @@ public struct BentoPaywallView: View {
                     onDismiss: onDismiss
                 )
                 
+                // Top Scrollable Content (hero & interactive bento grid)
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        // Hero Header
                         heroHeaderSection
-                        
-                        // 2x2 Bento Feature Grid
                         bentoGridSection
-                        
-                        // Plan Selection Cards
-                        planSelectionSection
-                        
-                        // CTA Button
-                        ctaButtonSection
-                        
-                        // Legal Footer
-                        PaywallLegalFooterView(
-                            termsURL: configuration.termsURL,
-                            privacyURL: configuration.privacyURL,
-                            textColor: .white.opacity(0.65),
-                            onRestore: {
-                                Task {
-                                    if await manager.restorePurchases() {
-                                        onPurchaseSuccess?()
-                                    }
-                                }
-                            }
-                        )
-                        .padding(.top, 4)
-                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 }
+                
+                // Static Bottom Dock (Plans + CTA + Legal Footer)
+                VStack(spacing: 12) {
+                    planSelectionSection
+                    ctaButtonSection
+                    
+                    PaywallLegalFooterView(
+                        termsURL: configuration.termsURL,
+                        privacyURL: configuration.privacyURL,
+                        textColor: .white.opacity(0.6),
+                        onRestore: {
+                            Task {
+                                if await manager.restorePurchases() {
+                                    onPurchaseSuccess?()
+                                }
+                            }
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(Color(red: 0.07, green: 0.07, blue: 0.10))
+                        .overlay(
+                            Rectangle()
+                                .fill(LinearGradient(
+                                    colors: [Color.white.opacity(0.1), Color.clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ))
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                        .ignoresSafeArea(edges: .bottom)
+                )
             }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
+                isIconFloating = true
+                glowOpacity = 0.9
+            }
+        }
         .alert("Notice", isPresented: $manager.showErrorAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -95,7 +117,6 @@ public struct BentoPaywallView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            // Subtle glowing orbs
             Circle()
                 .fill(configuration.primaryThemeColor.opacity(0.35))
                 .frame(width: 320, height: 320)
@@ -116,6 +137,12 @@ public struct BentoPaywallView: View {
         VStack(spacing: 12) {
             ZStack {
                 Circle()
+                    .fill(configuration.primaryThemeColor.opacity(0.4))
+                    .frame(width: 80, height: 80)
+                    .blur(radius: 12)
+                    .opacity(glowOpacity)
+                
+                Circle()
                     .fill(
                         LinearGradient(
                             colors: [configuration.primaryThemeColor, configuration.secondaryThemeColor],
@@ -130,7 +157,8 @@ public struct BentoPaywallView: View {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.white)
             }
-            .padding(.top, 8)
+            .offset(y: isIconFloating ? -4 : 4)
+            .padding(.top, 4)
             
             Text(configuration.appTitle)
                 .font(.system(size: 28, weight: .bold, design: .rounded))
@@ -144,7 +172,7 @@ public struct BentoPaywallView: View {
         }
     }
     
-    // MARK: - Bento Grid
+    // MARK: - Interactive Bento Grid
     
     private var bentoGridSection: some View {
         let columns = [
@@ -154,113 +182,98 @@ public struct BentoPaywallView: View {
         
         return LazyVGrid(columns: columns, spacing: 12) {
             ForEach(features) { item in
-                VStack(alignment: .leading, spacing: 8) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(configuration.primaryThemeColor.opacity(0.25))
-                            .frame(width: 36, height: 36)
-                        
-                        Image(systemName: item.icon)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
+                let isTileActive = selectedTileId == item.id
+                
+                Button(action: {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        selectedTileId = item.id
                     }
-                    
-                    Text(item.title)
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .lineLimit(1)
-                    
-                    Text(item.subtitle)
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(.white.opacity(0.65))
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                    HapticFeedback.light()
+                }) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(isTileActive ? configuration.primaryThemeColor : configuration.primaryThemeColor.opacity(0.25))
+                                .frame(width: 36, height: 36)
+                            
+                            Image(systemName: item.icon)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Text(item.title)
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                        
+                        Text(item.subtitle)
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundColor(.white.opacity(0.65))
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(isTileActive ? Color.white.opacity(0.12) : Color.white.opacity(0.06))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(isTileActive ? configuration.primaryThemeColor : Color.white.opacity(0.12), lineWidth: isTileActive ? 2 : 1)
+                            )
+                    )
+                    .scaleEffect(isTileActive ? 1.03 : 1.0)
                 }
-                .padding(14)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.white.opacity(0.06))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                        )
-                )
+                .buttonStyle(.plain)
             }
         }
     }
     
-    // MARK: - Plan Selection
+    // MARK: - Plan Selection (Static Bottom Dock)
     
     private var planSelectionSection: some View {
-        VStack(spacing: 10) {
+        HStack(spacing: 10) {
             ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    HStack(spacing: 12) {
-                        // Radio circle
-                        ZStack {
-                            Circle()
-                                .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.3), lineWidth: 2)
-                                .frame(width: 20, height: 20)
-                            
-                            if isSelected {
-                                Circle()
-                                    .fill(configuration.primaryThemeColor)
-                                    .frame(width: 10, height: 10)
-                            }
-                        }
-                        
-                        // Plan Details
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text(package.title)
-                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                    .foregroundColor(.white)
-                                
-                                if let badge = package.badgeText {
-                                    DiscountBadgeView(
-                                        text: badge,
-                                        backgroundColor: configuration.primaryThemeColor
-                                    )
-                                }
-                            }
-                            
-                            if let weekly = package.weeklyEquivalentString {
-                                Text(weekly)
-                                    .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.6))
-                            } else if let trial = package.introTrialText {
-                                Text(trial)
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundColor(Color(red: 0.3, green: 0.85, blue: 0.5))
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        // Price
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(package.localizedPriceString)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            Text(package.kind == .annual ? "Annual" : package.kind == .monthly ? "Monthly" : "Lifetime")
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                             
-                            Text(package.periodSubtitle)
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.white.opacity(0.6))
+                            Spacer()
+                            
+                            if let badge = package.badgeText {
+                                Text(badge)
+                                    .font(.system(size: 8.5, weight: .black, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(configuration.primaryThemeColor, in: Capsule())
+                            }
                         }
+                        
+                        Text(package.localizedPriceString)
+                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .foregroundColor(isSelected ? configuration.secondaryThemeColor : .white)
+                        
+                        Text(package.weeklyEquivalentString ?? package.periodSubtitle)
+                            .font(.system(size: 10, weight: .regular))
+                            .foregroundColor(.white.opacity(0.6))
+                            .lineLimit(1)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
+                    .padding(11)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.white.opacity(0.12) : Color.white.opacity(0.04))
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.15) : Color.white.opacity(0.05))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 1)
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(isSelected ? configuration.secondaryThemeColor : Color.white.opacity(0.12), lineWidth: isSelected ? 2 : 1)
                             )
                     )
                 }
@@ -292,8 +305,7 @@ public struct BentoPaywallView: View {
                     .shadow(color: configuration.primaryThemeColor.opacity(0.4), radius: 12, y: 5)
                 
                 if manager.isPurchasing {
-                    ProgressView()
-                        .tint(.white)
+                    ProgressView().tint(.white)
                 } else {
                     HStack(spacing: 8) {
                         Text(ctaTitle)
@@ -306,10 +318,9 @@ public struct BentoPaywallView: View {
                     }
                 }
             }
-            .frame(height: 54)
+            .frame(height: 52)
         }
         .disabled(manager.isPurchasing)
-        .padding(.top, 6)
     }
     
     private var ctaTitle: String {

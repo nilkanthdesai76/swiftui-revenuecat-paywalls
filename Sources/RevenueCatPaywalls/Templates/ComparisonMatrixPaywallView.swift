@@ -7,6 +7,8 @@ public struct ComparisonMatrixPaywallView: View {
     public var onDismiss: () -> Void
     public var onPurchaseSuccess: (() -> Void)?
     
+    @State private var hoveredRowId: UUID?
+    
     public init(
         manager: PaywallManager,
         configuration: PaywallConfiguration = PaywallConfiguration(
@@ -45,48 +47,59 @@ public struct ComparisonMatrixPaywallView: View {
                     onDismiss: onDismiss
                 )
                 
+                // Top Scrollable Content (Comparison Matrix)
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        // Title
-                        VStack(spacing: 8) {
+                    VStack(spacing: 18) {
+                        VStack(spacing: 6) {
                             Text(configuration.appTitle)
                                 .font(.system(size: 26, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
                             
                             Text(configuration.appSubtitle)
-                                .font(.system(size: 14, weight: .regular))
+                                .font(.system(size: 13, weight: .regular))
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 20)
                         }
-                        .padding(.top, 4)
+                        .padding(.top, 2)
                         
-                        // Comparison Table
                         matrixTableView
-                        
-                        // Plan Selector Cards
-                        planSelectionCards
-                        
-                        // CTA
-                        ctaButtonSection
-                        
-                        // Legal Footer
-                        PaywallLegalFooterView(
-                            termsURL: configuration.termsURL,
-                            privacyURL: configuration.privacyURL,
-                            onRestore: {
-                                Task {
-                                    if await manager.restorePurchases() {
-                                        onPurchaseSuccess?()
-                                    }
-                                }
-                            }
-                        )
-                        .padding(.top, 4)
-                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal, 18)
+                    .padding(.bottom, 16)
                 }
+                
+                // Static Bottom Dock (Plans + CTA + Legal Footer)
+                VStack(spacing: 12) {
+                    planSelectionCards
+                    ctaButtonSection
+                    
+                    PaywallLegalFooterView(
+                        termsURL: configuration.termsURL,
+                        privacyURL: configuration.privacyURL,
+                        onRestore: {
+                            Task {
+                                if await manager.restorePurchases() {
+                                    onPurchaseSuccess?()
+                                }
+                            }
+                        }
+                    )
+                }
+                .padding(.horizontal, 18)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(Color.appSecondaryGroupedBackground)
+                        .overlay(
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.15))
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                        .ignoresSafeArea(edges: .bottom)
+                )
             }
         }
         .alert("Notice", isPresented: $manager.showErrorAlert) {
@@ -102,7 +115,7 @@ public struct ComparisonMatrixPaywallView: View {
         VStack(spacing: 0) {
             // Table Header Row
             HStack {
-                Text("Features")
+                Text("Capability")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -127,33 +140,44 @@ public struct ComparisonMatrixPaywallView: View {
             
             Divider()
             
-            // Feature Rows
+            // Feature Rows with tap highlight
             ForEach(Array(comparisonRows.enumerated()), id: \.element.id) { index, row in
-                HStack {
-                    Text(row.featureName)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Text(row.freeTierValue)
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .frame(width: 70, alignment: .center)
-                    
-                    HStack(spacing: 2) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(configuration.primaryThemeColor)
-                            .font(.system(size: 12))
-                        
-                        Text(row.proTierValue)
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(configuration.primaryThemeColor)
+                let isHovered = hoveredRowId == row.id
+                
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        hoveredRowId = isHovered ? nil : row.id
                     }
-                    .frame(width: 80, alignment: .center)
+                    HapticFeedback.light()
+                }) {
+                    HStack {
+                        Text(row.featureName)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Text(row.freeTierValue)
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundColor(.secondary)
+                            .frame(width: 70, alignment: .center)
+                        
+                        HStack(spacing: 3) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(configuration.primaryThemeColor)
+                                .font(.system(size: 12))
+                                .scaleEffect(isHovered ? 1.2 : 1.0)
+                            
+                            Text(row.proTierValue)
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(configuration.primaryThemeColor)
+                        }
+                        .frame(width: 80, alignment: .center)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 11)
+                    .background(isHovered ? configuration.primaryThemeColor.opacity(0.1) : (index.isMultiple(of: 2) ? Color.appSystemBackground : Color.appSecondarySystemBackground.opacity(0.4)))
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 11)
-                .background(index.isMultiple(of: 2) ? Color.appSystemBackground : Color.appSecondarySystemBackground.opacity(0.4))
+                .buttonStyle(.plain)
                 
                 if index < comparisonRows.count - 1 {
                     Divider()
@@ -167,7 +191,7 @@ public struct ComparisonMatrixPaywallView: View {
         )
     }
     
-    // MARK: - Plan Cards
+    // MARK: - Plan Cards (Static Bottom Dock)
     
     private var planSelectionCards: some View {
         HStack(spacing: 10) {
@@ -177,10 +201,10 @@ public struct ComparisonMatrixPaywallView: View {
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             Text(package.kind == .annual ? "Annual" : "Monthly")
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
                             
                             Spacer()
@@ -191,18 +215,18 @@ public struct ComparisonMatrixPaywallView: View {
                         }
                         
                         Text(package.localizedPriceString)
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .font(.system(size: 17, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
                         Text(package.weeklyEquivalentString ?? package.periodSubtitle)
-                            .font(.system(size: 11, weight: .regular))
+                            .font(.system(size: 10, weight: .regular))
                             .foregroundColor(.secondary)
                     }
-                    .padding(14)
+                    .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.08) : Color.appSecondarySystemBackground)
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSystemBackground)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                                     .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
@@ -238,7 +262,7 @@ public struct ComparisonMatrixPaywallView: View {
                         .foregroundColor(.white)
                 }
             }
-            .frame(height: 54)
+            .frame(height: 52)
         }
         .disabled(manager.isPurchasing)
     }

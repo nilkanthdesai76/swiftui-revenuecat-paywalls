@@ -20,6 +20,14 @@ public enum HapticFeedback {
         #endif
     }
     
+    public static func heavy() {
+        #if canImport(UIKit)
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.prepare()
+        generator.impactOccurred()
+        #endif
+    }
+    
     public static func selection() {
         #if canImport(UIKit)
         let generator = UISelectionFeedbackGenerator()

@@ -8,6 +8,7 @@ public struct MediaWaveformPaywallView: View {
     public var onPurchaseSuccess: (() -> Void)?
     
     @State private var wavePhase: Double = 0.0
+    @State private var tappedBarIndex: Int? = nil
     
     public init(
         manager: PaywallManager,
@@ -31,7 +32,6 @@ public struct MediaWaveformPaywallView: View {
     
     public var body: some View {
         ZStack {
-            // Dark studio background
             Color.black.ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -49,9 +49,9 @@ public struct MediaWaveformPaywallView: View {
                     onDismiss: onDismiss
                 )
                 
+                // Top Scrollable Section
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 22) {
-                        // Title
+                    VStack(spacing: 20) {
                         VStack(spacing: 6) {
                             Text(configuration.appTitle)
                                 .font(.system(size: 26, weight: .bold, design: .rounded))
@@ -64,38 +64,53 @@ public struct MediaWaveformPaywallView: View {
                                 .padding(.horizontal, 24)
                         }
                         
-                        // Pulsing Waveform Visualizer
+                        // Interactive Pulsing Waveform Visualizer
                         waveformVisualizer
                             .frame(height: 70)
                             .padding(.horizontal, 10)
                         
-                        // Features
                         featuresGrid
-                        
-                        // Plans
-                        plansSection
-                        
-                        // CTA
-                        ctaButtonSection
-                        
-                        // Legal Footer
-                        PaywallLegalFooterView(
-                            termsURL: configuration.termsURL,
-                            privacyURL: configuration.privacyURL,
-                            textColor: .white.opacity(0.55),
-                            onRestore: {
-                                Task {
-                                    if await manager.restorePurchases() {
-                                        onPurchaseSuccess?()
-                                    }
-                                }
-                            }
-                        )
-                        .padding(.top, 4)
-                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 }
+                
+                // Static Bottom Dock (Plans + CTA + Legal Footer)
+                VStack(spacing: 12) {
+                    plansSection
+                    ctaButtonSection
+                    
+                    PaywallLegalFooterView(
+                        termsURL: configuration.termsURL,
+                        privacyURL: configuration.privacyURL,
+                        textColor: .white.opacity(0.55),
+                        onRestore: {
+                            Task {
+                                if await manager.restorePurchases() {
+                                    onPurchaseSuccess?()
+                                }
+                            }
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(Color(red: 0.06, green: 0.06, blue: 0.08))
+                        .overlay(
+                            Rectangle()
+                                .fill(LinearGradient(
+                                    colors: [configuration.primaryThemeColor.opacity(0.3), Color.clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ))
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                        .ignoresSafeArea(edges: .bottom)
+                )
             }
         }
         .preferredColorScheme(.dark)
@@ -111,24 +126,37 @@ public struct MediaWaveformPaywallView: View {
         }
     }
     
-    // MARK: - Waveform Visualizer
+    // MARK: - Interactive Waveform Visualizer
     
     private var waveformVisualizer: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<24, id: \.self) { i in
+        HStack(spacing: 5) {
+            ForEach(0..<22, id: \.self) { i in
+                let isTapped = tappedBarIndex == i
                 let normalized = sin(Double(i) * 0.4 + (wavePhase * .pi))
-                let height = max(12.0, abs(normalized) * 60.0 + 8.0)
+                let baseHeight = max(12.0, abs(normalized) * 60.0 + 8.0)
+                let height = isTapped ? 68.0 : baseHeight
                 
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(
-                        LinearGradient(
-                            colors: [configuration.primaryThemeColor, configuration.secondaryThemeColor],
-                            startPoint: .bottom,
-                            endPoint: .top
+                Button(action: {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.5)) {
+                        tappedBarIndex = i
+                    }
+                    HapticFeedback.light()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        tappedBarIndex = nil
+                    }
+                }) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(
+                            LinearGradient(
+                                colors: isTapped ? [Color.white, configuration.primaryThemeColor] : [configuration.primaryThemeColor, configuration.secondaryThemeColor],
+                                startPoint: .bottom,
+                                endPoint: .top
+                            )
                         )
-                    )
-                    .frame(height: CGFloat(height))
-                    .shadow(color: configuration.primaryThemeColor.opacity(0.3), radius: 3)
+                        .frame(height: CGFloat(height))
+                        .shadow(color: configuration.primaryThemeColor.opacity(isTapped ? 0.8 : 0.3), radius: isTapped ? 8 : 3)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -170,66 +198,51 @@ public struct MediaWaveformPaywallView: View {
         }
     }
     
-    // MARK: - Plans
+    // MARK: - Plans (Static Bottom Dock)
     
     private var plansSection: some View {
-        VStack(spacing: 10) {
+        HStack(spacing: 10) {
             ForEach(manager.packages) { package in
                 let isSelected = manager.selectedPackage?.id == package.id
                 
                 Button(action: {
                     manager.selectPackage(package)
                 }) {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle()
-                                .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.2), lineWidth: 2)
-                                .frame(width: 20, height: 20)
-                            
-                            if isSelected {
-                                Circle()
-                                    .fill(configuration.primaryThemeColor)
-                                    .frame(width: 10, height: 10)
-                            }
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text(package.title)
-                                    .font(.system(size: 15, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
-                                
-                                if let badge = package.badgeText {
-                                    DiscountBadgeView(text: badge, backgroundColor: configuration.primaryThemeColor, textColor: .black)
-                                }
-                            }
-                            
-                            if let weekly = package.weeklyEquivalentString {
-                                Text(weekly)
-                                    .font(.system(size: 11, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(package.localizedPriceString)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            Text(package.kind == .annual ? "Annual" : package.kind == .monthly ? "Monthly" : "Lifetime")
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                             
-                            Text(package.periodSubtitle)
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.white.opacity(0.55))
+                            Spacer()
+                            
+                            if let badge = package.badgeText {
+                                Text(badge)
+                                    .font(.system(size: 8.5, weight: .black, design: .rounded))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(configuration.primaryThemeColor, in: Capsule())
+                            }
                         }
+                        
+                        Text(package.localizedPriceString)
+                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .white)
+                        
+                        Text(package.weeklyEquivalentString ?? package.periodSubtitle)
+                            .font(.system(size: 10, weight: .regular))
+                            .foregroundColor(.white.opacity(0.6))
+                            .lineLimit(1)
                     }
-                    .padding(14)
+                    .padding(11)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.white.opacity(0.10) : Color.white.opacity(0.03))
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.12) : Color.white.opacity(0.03))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.08), lineWidth: isSelected ? 2 : 1)
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 1)
                             )
                     )
                 }
@@ -274,7 +287,7 @@ public struct MediaWaveformPaywallView: View {
                     }
                 }
             }
-            .frame(height: 54)
+            .frame(height: 52)
         }
         .disabled(manager.isPurchasing)
     }

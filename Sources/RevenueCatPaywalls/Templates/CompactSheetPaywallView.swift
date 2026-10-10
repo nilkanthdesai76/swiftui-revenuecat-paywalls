@@ -6,12 +6,15 @@ public struct CompactSheetPaywallView: View {
     public var onDismiss: () -> Void
     public var onPurchaseSuccess: (() -> Void)?
     
+    @State private var isUnlocked: Bool = false
+    @State private var lockScale: CGFloat = 0.9
+    
     public init(
         manager: PaywallManager,
         configuration: PaywallConfiguration = PaywallConfiguration(
             appTitle: "Unlock Full Access",
             appSubtitle: "Continue using all premium features without restrictions",
-            appIconSystemName: "lock.open.trianglebadge.exclamationmark.fill",
+            appIconSystemName: "lock.shield.fill",
             primaryThemeColor: Color(red: 0.18, green: 0.65, blue: 0.45)
         ),
         onDismiss: @escaping () -> Void,
@@ -24,145 +27,227 @@ public struct CompactSheetPaywallView: View {
     }
     
     public var body: some View {
-        VStack(spacing: 18) {
-            // Drag Indicator
-            Capsule()
-                .fill(Color.secondary.opacity(0.3))
-                .frame(width: 36, height: 5)
-                .padding(.top, 10)
-            
-            // Close button bar
-            HStack {
-                Spacer()
-                Button(action: {
-                    HapticFeedback.light()
-                    onDismiss()
-                }) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.secondary)
-                        .frame(width: 30, height: 30)
-                        .background(.ultraThinMaterial, in: Circle())
-                }
-            }
-            .padding(.horizontal, 20)
-            
-            // Icon & Title
-            VStack(spacing: 8) {
-                Image(systemName: configuration.appIconSystemName)
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(configuration.primaryThemeColor)
+        VStack(spacing: 0) {
+            // Drag Indicator & Close Bar
+            VStack(spacing: 6) {
+                Capsule()
+                    .fill(Color.secondary.opacity(0.3))
+                    .frame(width: 36, height: 5)
+                    .padding(.top, 10)
                 
-                Text(configuration.appTitle)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                
-                Text(configuration.appSubtitle)
-                    .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-            }
-            
-            // Plan Cards (Compact Row)
-            HStack(spacing: 12) {
-                ForEach(manager.packages.filter { $0.kind == .annual || $0.kind == .monthly }) { package in
-                    let isSelected = manager.selectedPackage?.id == package.id
-                    
+                HStack {
+                    Spacer()
                     Button(action: {
-                        manager.selectPackage(package)
+                        HapticFeedback.light()
+                        onDismiss()
                     }) {
-                        VStack(spacing: 4) {
-                            if let badge = package.badgeText {
-                                Text(badge)
-                                    .font(.system(size: 9.5, weight: .black, design: .rounded))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(configuration.primaryThemeColor, in: Capsule())
-                            } else {
-                                Text("STANDARD")
-                                    .font(.system(size: 9.5, weight: .bold, design: .rounded))
-                                    .foregroundColor(.secondary)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                            }
-                            
-                            Text(package.kind == .annual ? "Annual" : "Monthly")
-                                .font(.system(size: 15, weight: .bold, design: .rounded))
-                                .foregroundColor(.primary)
-                            
-                            Text(package.localizedPriceString)
-                                .font(.system(size: 17, weight: .black, design: .rounded))
-                                .foregroundColor(isSelected ? configuration.primaryThemeColor : .primary)
-                            
-                            Text(package.periodSubtitle)
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.vertical, 14)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSecondarySystemBackground)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
-                                )
-                        )
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.secondary)
+                            .frame(width: 30, height: 30)
+                            .background(.ultraThinMaterial, in: Circle())
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
             
-            // Fast 1-Tap CTA
-            Button(action: {
-                HapticFeedback.medium()
-                Task {
-                    if await manager.purchaseSelected() {
-                        onPurchaseSuccess?()
+            // Top Scrollable Content (Icon & Feature highlights)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 16) {
+                    // Animated Unlocking Shield
+                    VStack(spacing: 8) {
+                        ZStack {
+                            Circle()
+                                .fill(configuration.primaryThemeColor.opacity(0.15))
+                                .frame(width: 60, height: 60)
+                            
+                            Image(systemName: isUnlocked ? "lock.open.fill" : "lock.fill")
+                                .font(.system(size: 26, weight: .bold))
+                                .foregroundColor(configuration.primaryThemeColor)
+                                .scaleEffect(lockScale)
+                        }
+                        
+                        Text(configuration.appTitle)
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        
+                        Text(configuration.appSubtitle)
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
                     }
-                }
-            }) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(configuration.primaryThemeColor)
                     
-                    if manager.isPurchasing {
-                        ProgressView().tint(.white)
-                    } else {
-                        Text(manager.selectedPackage?.hasFreeTrial == true ? "Start 7-Day Free Trial" : "Continue")
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
+                    // Quick bullets
+                    VStack(alignment: .leading, spacing: 10) {
+                        bulletItem(icon: "bolt.fill", title: "Instant Unlimited Exports", desc: "No daily throttles or file limits")
+                        bulletItem(icon: "icloud.fill", title: "Encrypted Cloud Sync", desc: "Synchronized across all your devices")
+                        bulletItem(icon: "nosign", title: "100% Ad-Free Forever", desc: "Clean distraction-free workflow")
                     }
+                    .padding(14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color.appSecondarySystemBackground)
+                    )
                 }
-                .frame(height: 50)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
             }
-            .disabled(manager.isPurchasing)
-            .padding(.horizontal, 20)
             
-            // Compact Legal Links
-            PaywallLegalFooterView(
-                termsURL: configuration.termsURL,
-                privacyURL: configuration.privacyURL,
-                onRestore: {
-                    Task {
-                        if await manager.restorePurchases() {
-                            onPurchaseSuccess?()
+            // Static Bottom Dock (Plans + 1-Tap CTA + Legal Footer)
+            VStack(spacing: 12) {
+                planSelectionCards
+                ctaButton
+                
+                PaywallLegalFooterView(
+                    termsURL: configuration.termsURL,
+                    privacyURL: configuration.privacyURL,
+                    onRestore: {
+                        Task {
+                            if await manager.restorePurchases() {
+                                onPurchaseSuccess?()
+                            }
                         }
                     }
-                }
+                )
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
+            .background(
+                Rectangle()
+                    .fill(Color.appSecondaryGroupedBackground)
+                    .overlay(
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.12))
+                            .frame(height: 1),
+                        alignment: .top
+                    )
+                    .ignoresSafeArea(edges: .bottom)
             )
-            .padding(.bottom, 16)
         }
         .background(Color.appSystemBackground)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    isUnlocked = true
+                    lockScale = 1.15
+                }
+                HapticFeedback.light()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    withAnimation(.spring()) {
+                        lockScale = 1.0
+                    }
+                }
+            }
+        }
         .alert("Notice", isPresented: $manager.showErrorAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(manager.errorMessage ?? "An error occurred.")
         }
+    }
+    
+    private func bulletItem(icon: String, title: String, desc: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(configuration.primaryThemeColor)
+                .font(.system(size: 14, weight: .bold))
+                .frame(width: 22)
+            
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundColor(.primary)
+                Text(desc)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+    }
+    
+    // MARK: - Plan Selection Cards
+    
+    private var planSelectionCards: some View {
+        HStack(spacing: 12) {
+            ForEach(manager.packages.filter { $0.kind == .annual || $0.kind == .monthly }) { package in
+                let isSelected = manager.selectedPackage?.id == package.id
+                
+                Button(action: {
+                    manager.selectPackage(package)
+                }) {
+                    VStack(spacing: 3) {
+                        if let badge = package.badgeText {
+                            Text(badge)
+                                .font(.system(size: 9.5, weight: .black, design: .rounded))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(configuration.primaryThemeColor, in: Capsule())
+                        } else {
+                            Text("STANDARD")
+                                .font(.system(size: 9.5, weight: .bold, design: .rounded))
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                        }
+                        
+                        Text(package.kind == .annual ? "Annual" : "Monthly")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        
+                        Text(package.localizedPriceString)
+                            .font(.system(size: 17, weight: .black, design: .rounded))
+                            .foregroundColor(isSelected ? configuration.primaryThemeColor : .primary)
+                        
+                        Text(package.periodSubtitle)
+                            .font(.system(size: 10, weight: .regular))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSystemBackground)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    
+    // MARK: - CTA
+    
+    private var ctaButton: some View {
+        Button(action: {
+            HapticFeedback.medium()
+            Task {
+                if await manager.purchaseSelected() {
+                    onPurchaseSuccess?()
+                }
+            }
+        }) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(configuration.primaryThemeColor)
+                
+                if manager.isPurchasing {
+                    ProgressView().tint(.white)
+                } else {
+                    Text(manager.selectedPackage?.hasFreeTrial == true ? "Start 7-Day Free Trial" : "Continue")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                }
+            }
+            .frame(height: 48)
+        }
+        .disabled(manager.isPurchasing)
     }
 }
 
