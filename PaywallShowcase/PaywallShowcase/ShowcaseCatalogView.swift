@@ -2,15 +2,15 @@ import SwiftUI
 import RevenueCatPaywalls
 
 public enum PaywallCategory: String, CaseIterable, Identifiable {
-    case all = "All (25)"
-    case general = "General Archetypes (15)"
-    case discounts = "Discount Offers (10)"
+    case all = "All (40)"
+    case general = "General Archetypes (23)"
+    case discounts = "Discount Offers (17)"
     
     public var id: String { rawValue }
 }
 
 public enum PaywallTemplateType: String, CaseIterable, Identifiable {
-    // General Archetypes (15)
+    // General Archetypes (23)
     case bento = "Glassmorphic Bento"
     case timeline = "Apple Timeline Trial"
     case habitStreak = "Habit Streak & Social Proof"
@@ -26,8 +26,16 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
     case quizResultsPersonalized = "Quiz Results Personalized"
     case financeWealthClean = "Finance Wealth Clean"
     case socialProofWall = "Social Proof Wall"
+    case aiPromptTokensMeter = "AI Prompt Quota & Models"
+    case documentScannerPDF = "Scanner & PDF OCR Studio"
+    case vpnSecurityShield = "VPN & Privacy UltraShield"
+    case meditationSleepSoundscape = "Meditation & Sleep Soundscape"
+    case languageVocabMastery = "Language & Polyglot Mastery"
+    case travelFlightTracker = "Flight Radar & Travel Pass"
+    case retroArcadeGaming = "Retro Arcade Game Pass"
+    case podcastAudiobookPlayer = "Master Audio & Podcast Suite"
     
-    // Discount & Exit-Intent Offer Designs (10)
+    // Discount & Exit-Intent Offer Designs (17)
     case specialOffer = "Exit-Offer Special Downsell"
     case flashSale = "24H Flash Sale Event"
     case twoTierUpgrade = "Lifetime VIP Value Anchor"
@@ -38,14 +46,28 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
     case studentCreatorGrant = "Student & Creator Grant"
     case abandonedCartNotification = "Abandoned Cart iOS Alert"
     case annualVsMonthlyFrictionKiller = "Low-Friction Trial Extension"
+    case earlyBirdLaunch = "Early Bird Launch (#500 Spots)"
+    case founderPersonalLetter = "Founder's Personal Letter (50%)"
+    case payWhatYouWantSliding = "Pay-What-You-Want Scale"
+    case referAFriendUnlock = "Refer a Friend 50/50 Pass"
+    case seasonalNeonFlash = "Neon Flash Cyber Sale (70%)"
+    case limitedSpotsRemaining = "Timezone Hold Reservation (2 Left)"
+    case familySharingSplit = "iCloud Family Sharing Split ($0.83/mo)"
     
     public var id: String { rawValue }
     
     public var category: PaywallCategory {
         switch self {
-        case .bento, .timeline, .habitStreak, .comparisonMatrix, .mediaWaveform, .cyberpunk, .compactSheet, .minimalistEditorial, .spatialImmersive, .beforeAfterSlider, .videoHeroCinematic, .fitnessRingsMetrics, .quizResultsPersonalized, .financeWealthClean, .socialProofWall:
+        case .bento, .timeline, .habitStreak, .comparisonMatrix, .mediaWaveform, .cyberpunk, .compactSheet,
+             .minimalistEditorial, .spatialImmersive, .beforeAfterSlider, .videoHeroCinematic, .fitnessRingsMetrics,
+             .quizResultsPersonalized, .financeWealthClean, .socialProofWall, .aiPromptTokensMeter, .documentScannerPDF,
+             .vpnSecurityShield, .meditationSleepSoundscape, .languageVocabMastery, .travelFlightTracker,
+             .retroArcadeGaming, .podcastAudiobookPlayer:
             return .general
-        case .specialOffer, .flashSale, .twoTierUpgrade, .scratchToReveal, .winBackRetention, .spinToWinWheel, .holidaySeasonalGift, .studentCreatorGrant, .abandonedCartNotification, .annualVsMonthlyFrictionKiller:
+        case .specialOffer, .flashSale, .twoTierUpgrade, .scratchToReveal, .winBackRetention,
+             .spinToWinWheel, .holidaySeasonalGift, .studentCreatorGrant, .abandonedCartNotification,
+             .annualVsMonthlyFrictionKiller, .earlyBirdLaunch, .founderPersonalLetter, .payWhatYouWantSliding,
+             .referAFriendUnlock, .seasonalNeonFlash, .limitedSpotsRemaining, .familySharingSplit:
             return .discounts
         }
     }
@@ -67,6 +89,15 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .quizResultsPersonalized: return "Onboarding quiz trajectory roadmap with 94% algorithm success score"
         case .financeWealthClean: return "Bloomberg & Copilot wealth growth simulator with AES-256 bank encryption"
         case .socialProofWall: return "4.9-star ratings banner & verified App Store subscriber testimonials"
+        case .aiPromptTokensMeter: return "Live quota gauge, LLM model grid (GPT-4o, Claude 3.5), and speed benchmark"
+        case .documentScannerPDF: return "Moving cyan laser beam scanner, real-time OCR text highlight, and PDF vault"
+        case .vpnSecurityShield: return "3D cybersecurity shield with animated ping radar & 90+ global server nodes"
+        case .meditationSleepSoundscape: return "Twilight night sky with animated breathing circle & interactive sound mixer"
+        case .languageVocabMastery: return "3D vocabulary flashcard flip, CEFR fluency ladder (A1-C2), and AI accent coach"
+        case .travelFlightTracker: return "Perforated boarding pass (JFK-LHR), flight progress bar, and altitude telemetry"
+        case .retroArcadeGaming: return "8-bit CRT arcade scanlines, blinking INSERT COIN credit, and 60 FPS rewind"
+        case .podcastAudiobookPlayer: return "Rotating vinyl record player, word-by-word AI transcripts, and silence trimmer"
+            
         case .specialOffer: return "Exit-intent 1-offering deal with live ticking timer & 75% OFF badge"
         case .flashSale: return "Urgency marquee ticker, claim meter & instant voucher coupon code"
         case .twoTierUpgrade: return "Value math breakdown comparing recurring annual vs lifetime pass"
@@ -77,6 +108,13 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .studentCreatorGrant: return "60% academic & creator aid grant with verified educational badge"
         case .abandonedCartNotification: return "Simulated iOS lockscreen push alert from founder with $20 credit voucher"
         case .annualVsMonthlyFrictionKiller: return "Risk-reversal low installment terms with zero upfront friction"
+        case .earlyBirdLaunch: return "Founding member certificate #384 of 500 with lifetime grandfathered rate"
+        case .founderPersonalLetter: return "Heartfelt personal note & signature from solo indie creator with 50% discount"
+        case .payWhatYouWantSliding: return "Customizable contribution slider ($19 - $99) supporting open-source software"
+        case .referAFriendUnlock: return "Viral 2-way referral coupon with copyable code FRIEND50-VIP and friend avatars"
+        case .seasonalNeonFlash: return "High-octane cyberpunk neon mega flash sale with live countdown clock"
+        case .limitedSpotsRemaining: return "Geo-targeted capacity hold timer reserving slot #92 with lock-in guarantee"
+        case .familySharingSplit: return "Interactive family stepper calculating split price down to $0.83 / mo / member"
         }
     }
     
@@ -97,6 +135,15 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .quizResultsPersonalized: return "chart.xyaxis.line"
         case .financeWealthClean: return "chart.line.uptrend.xyaxis"
         case .socialProofWall: return "star.bubble.fill"
+        case .aiPromptTokensMeter: return "sparkles"
+        case .documentScannerPDF: return "doc.viewfinder"
+        case .vpnSecurityShield: return "shield.lefthalf.filled.badge.checkmark"
+        case .meditationSleepSoundscape: return "moon.stars.fill"
+        case .languageVocabMastery: return "globe.americas.fill"
+        case .travelFlightTracker: return "airplane.circle.fill"
+        case .retroArcadeGaming: return "gamecontroller.fill"
+        case .podcastAudiobookPlayer: return "headphones"
+            
         case .specialOffer: return "tag.fill"
         case .flashSale: return "bolt.fill"
         case .twoTierUpgrade: return "crown.fill"
@@ -107,6 +154,13 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .studentCreatorGrant: return "graduationcap.fill"
         case .abandonedCartNotification: return "bell.badge.fill"
         case .annualVsMonthlyFrictionKiller: return "checkmark.shield.fill"
+        case .earlyBirdLaunch: return "seal.fill"
+        case .founderPersonalLetter: return "envelope.open.fill"
+        case .payWhatYouWantSliding: return "slider.horizontal.3"
+        case .referAFriendUnlock: return "person.2.badge.gearshape.fill"
+        case .seasonalNeonFlash: return "bolt.badge.clock.fill"
+        case .limitedSpotsRemaining: return "lock.shield.fill"
+        case .familySharingSplit: return "person.3.sequence.fill"
         }
     }
     
@@ -127,6 +181,15 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .quizResultsPersonalized: return Color(red: 0.25, green: 0.55, blue: 0.95)
         case .financeWealthClean: return Color(red: 0.10, green: 0.65, blue: 0.40)
         case .socialProofWall: return Color(red: 0.95, green: 0.40, blue: 0.15)
+        case .aiPromptTokensMeter: return Color(red: 0.55, green: 0.35, blue: 0.98)
+        case .documentScannerPDF: return Color(red: 0.12, green: 0.58, blue: 0.95)
+        case .vpnSecurityShield: return Color(red: 0.15, green: 0.85, blue: 0.55)
+        case .meditationSleepSoundscape: return Color(red: 0.62, green: 0.52, blue: 0.98)
+        case .languageVocabMastery: return Color(red: 0.98, green: 0.45, blue: 0.15)
+        case .travelFlightTracker: return Color(red: 0.10, green: 0.60, blue: 0.98)
+        case .retroArcadeGaming: return Color(red: 0.95, green: 0.20, blue: 0.50)
+        case .podcastAudiobookPlayer: return Color(red: 0.95, green: 0.40, blue: 0.25)
+            
         case .specialOffer: return Color(red: 0.95, green: 0.25, blue: 0.35)
         case .flashSale: return Color(red: 0.95, green: 0.25, blue: 0.25)
         case .twoTierUpgrade: return Color(red: 0.95, green: 0.65, blue: 0.15)
@@ -137,6 +200,13 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .studentCreatorGrant: return Color(red: 0.15, green: 0.45, blue: 0.95)
         case .abandonedCartNotification: return Color(red: 0.12, green: 0.55, blue: 0.95)
         case .annualVsMonthlyFrictionKiller: return Color(red: 0.10, green: 0.80, blue: 0.55)
+        case .earlyBirdLaunch: return Color(red: 0.95, green: 0.78, blue: 0.25)
+        case .founderPersonalLetter: return Color(red: 0.88, green: 0.40, blue: 0.35)
+        case .payWhatYouWantSliding: return Color(red: 0.20, green: 0.75, blue: 0.95)
+        case .referAFriendUnlock: return Color(red: 0.15, green: 0.75, blue: 0.55)
+        case .seasonalNeonFlash: return Color(red: 1.0, green: 0.15, blue: 0.60)
+        case .limitedSpotsRemaining: return Color(red: 0.20, green: 0.85, blue: 0.45)
+        case .familySharingSplit: return Color(red: 0.35, green: 0.60, blue: 0.98)
         }
     }
     
@@ -157,6 +227,15 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .quizResultsPersonalized: return "Quiz Roadmap"
         case .financeWealthClean: return "Wealth Growth"
         case .socialProofWall: return "Wall of Love"
+        case .aiPromptTokensMeter: return "AI Token Meter"
+        case .documentScannerPDF: return "Laser Scanner"
+        case .vpnSecurityShield: return "Radar Shield"
+        case .meditationSleepSoundscape: return "Sleep Sanctuary"
+        case .languageVocabMastery: return "Polyglot Card"
+        case .travelFlightTracker: return "Boarding Pass"
+        case .retroArcadeGaming: return "8-Bit Arcade"
+        case .podcastAudiobookPlayer: return "Vinyl Audio EQ"
+            
         case .specialOffer: return "Exit Downsell"
         case .flashSale: return "24H Urgency"
         case .twoTierUpgrade: return "Value Math"
@@ -167,6 +246,13 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .studentCreatorGrant: return "Edu Aid"
         case .abandonedCartNotification: return "iOS Push Alert"
         case .annualVsMonthlyFrictionKiller: return "Zero Friction"
+        case .earlyBirdLaunch: return "Founding 500"
+        case .founderPersonalLetter: return "Founder Letter"
+        case .payWhatYouWantSliding: return "Sliding Scale"
+        case .referAFriendUnlock: return "Give 50/Get 50"
+        case .seasonalNeonFlash: return "Cyber Flash 70%"
+        case .limitedSpotsRemaining: return "Geo Hold Timer"
+        case .familySharingSplit: return "Split $0.83/mo"
         }
     }
 }
@@ -260,7 +346,7 @@ public struct ShowcaseCatalogView: View {
             .alert("Success", isPresented: $showSuccessAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text(successAlertMessage ?? "Transaction completed successfully!")
+                Text(successAlertMessage ?? "Purchase simulation successful!")
             }
         }
     }
@@ -268,59 +354,54 @@ public struct ShowcaseCatalogView: View {
     // MARK: - Hero Banner
     
     private var heroBanner: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(spacing: 10) {
             HStack {
-                Text("REVENUECAT + SWIFTUI")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundColor(Color(red: 0.95, green: 0.45, blue: 0.25))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(red: 0.95, green: 0.45, blue: 0.25).opacity(0.12), in: Capsule())
-                
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 8, height: 8)
+                        Text("40 PRODUCTION TEMPLATES READY")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Text("The Complete Paywall Library")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                }
                 Spacer()
                 
-                Text("8 Archetypes")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(.secondary)
+                Image(systemName: "rectangle.stack.fill")
+                    .font(.system(size: 26))
+                    .foregroundColor(.accentColor)
+                    .padding(12)
+                    .background(Color.accentColor.opacity(0.12), in: Circle())
             }
             
-            Text("High-Converting Paywall Templates")
-                .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundColor(.primary)
-            
-            Text("Sticky bottom docks keep pricing and CTA pinned. Top features scroll independently with interactive micro-animations.")
+            Text("RevenueCat-backed SwiftUI paywalls with stationary pinned docks, zero text clipping, interactive gestures, and downsell mechanics.")
                 .font(.system(size: 13, weight: .regular))
                 .foregroundColor(.secondary)
-                .lineSpacing(3)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(18)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.appSecondaryGroupedBackground)
-                .shadow(color: Color.black.opacity(0.04), radius: 10, y: 4)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(uiColor: .secondarySystemBackground))
         )
     }
     
-    // MARK: - Downsell Toggle Banner
+    // MARK: - Exit Downsell Toggle
     
     private var downsellToggleBanner: some View {
         HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Color(red: 0.95, green: 0.25, blue: 0.35).opacity(0.15))
-                    .frame(width: 36, height: 36)
-                
-                Image(systemName: "tag.fill")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(Color(red: 0.95, green: 0.25, blue: 0.35))
-            }
+            Image(systemName: enableDownsellOnExit ? "arrow.uturn.backward.circle.fill" : "arrow.uturn.backward.circle")
+                .font(.system(size: 22))
+                .foregroundColor(enableDownsellOnExit ? .orange : .secondary)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Exit-Offer Downsell Trigger")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                
-                Text(enableDownsellOnExit ? "Closing any paywall presents the 75% off lifetime offer" : "Closing paywall dismisses immediately")
+                Text("Exit Intent Downsell Mechanism")
+                    .font(.system(size: 13, weight: .semibold))
+                Text(enableDownsellOnExit ? "Triggers a 75% OFF rescue offer on dismiss" : "Direct dismiss without secondary rescue offer")
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.secondary)
             }
@@ -329,46 +410,40 @@ public struct ShowcaseCatalogView: View {
             
             Toggle("", isOn: $enableDownsellOnExit)
                 .labelsHidden()
-                .tint(Color(red: 0.95, green: 0.25, blue: 0.35))
         }
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.appSecondaryGroupedBackground)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(enableDownsellOnExit ? Color.orange.opacity(0.08) : Color(uiColor: .secondarySystemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(enableDownsellOnExit ? Color.orange.opacity(0.25) : Color.clear, lineWidth: 1)
+                )
         )
     }
     
-    // MARK: - Mode Status Card
+    // MARK: - Mode Card
     
     private var modeStatusCard: some View {
-        HStack(spacing: 12) {
-            Image(systemName: isMockMode ? "bolt.fill" : "network")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(isMockMode ? .orange : .green)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(isMockMode ? "Offline Mock Preview Mode Active" : "Live RevenueCat Mode Active")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                
-                Text(isMockMode ? "Testing realistic packages & trial flows without network" : "Connected to live RevenueCat offerings")
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(.secondary)
-            }
+        HStack(spacing: 10) {
+            Label(isMockMode ? "Mock Preview Mode Active" : "Live RevenueCat Mode Active",
+                  systemImage: isMockMode ? "sparkles" : "network")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(isMockMode ? .purple : .green)
             
             Spacer()
             
             Button("Configure") {
                 showSettingsSheet = true
             }
-            .font(.system(size: 12, weight: .semibold))
-            .buttonStyle(.bordered)
-            .tint(isMockMode ? .orange : .green)
+            .font(.system(size: 12, weight: .bold))
+            .foregroundColor(.accentColor)
         }
-        .padding(12)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.appSecondaryGroupedBackground)
+            Capsule()
+                .fill(isMockMode ? Color.purple.opacity(0.08) : Color.green.opacity(0.08))
         )
     }
     
@@ -379,33 +454,38 @@ public struct ShowcaseCatalogView: View {
             HapticFeedback.light()
             selectedTemplate = template
         }) {
-            HStack(spacing: 16) {
+            HStack(spacing: 14) {
+                // Icon Box
                 ZStack {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(template.accentColor.opacity(0.15))
-                        .frame(width: 46, height: 46)
+                        .fill(template.accentColor.opacity(0.14))
+                        .frame(width: 48, height: 48)
                     
                     Image(systemName: template.icon)
-                        .font(.system(size: 19, weight: .bold))
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(template.accentColor)
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
+                // Description
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
                         Text(template.rawValue)
-                            .font(.system(size: 15, weight: .bold, design: .rounded))
+                            .font(.system(size: 15, weight: .bold))
                             .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
                         
                         Text(template.tag)
-                            .font(.system(size: 9.0, weight: .bold, design: .rounded))
+                            .font(.system(size: 9, weight: .black, design: .rounded))
                             .foregroundColor(template.accentColor)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(template.accentColor.opacity(0.12), in: Capsule())
+                            .lineLimit(1)
                     }
                     
                     Text(template.subtitle)
-                        .font(.system(size: 11.5, weight: .regular))
+                        .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -414,33 +494,37 @@ public struct ShowcaseCatalogView: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.secondary.opacity(0.5))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.secondary.opacity(0.6))
             }
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.appSecondaryGroupedBackground)
-                    .shadow(color: Color.black.opacity(0.03), radius: 6, y: 2)
+                    .fill(Color(uiColor: .secondarySystemBackground))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(Color.primary.opacity(0.04), lineWidth: 1)
+                    )
             )
         }
         .buttonStyle(.plain)
     }
     
-    // MARK: - Destination Paywall Resolver
+    // MARK: - Destination Paywall Router (All 40 Templates)
     
     @ViewBuilder
     private func destinationPaywall(for template: PaywallTemplateType) -> some View {
         let manager = PaywallManager(isMockMode: isMockMode)
         
         switch template {
+        // --- General Archetypes (23) ---
         case .bento:
             BentoPaywallView(
                 manager: manager,
                 onDismiss: { handlePaywallDismissal(from: .bento) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("Bento Paywall purchase simulated successfully!")
+                    triggerSuccessAlert("Bento Pro Membership Activated!")
                 }
             )
             
@@ -450,7 +534,7 @@ public struct ShowcaseCatalogView: View {
                 onDismiss: { handlePaywallDismissal(from: .timeline) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("7-Day Free Trial activated successfully!")
+                    triggerSuccessAlert("7-Day Free Trial started successfully!")
                 }
             )
             
@@ -460,7 +544,7 @@ public struct ShowcaseCatalogView: View {
                 onDismiss: { handlePaywallDismissal(from: .habitStreak) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("Habit Streak Pass activated!")
+                    triggerSuccessAlert("Habit Streak Pro Pass Activated!")
                 }
             )
             
@@ -470,7 +554,7 @@ public struct ShowcaseCatalogView: View {
                 onDismiss: { handlePaywallDismissal(from: .comparisonMatrix) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("Upgraded to Pro via Comparison Matrix!")
+                    triggerSuccessAlert("Full Feature Matrix unlocked!")
                 }
             )
             
@@ -480,7 +564,7 @@ public struct ShowcaseCatalogView: View {
                 onDismiss: { handlePaywallDismissal(from: .mediaWaveform) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("Studio Master Access unlocked!")
+                    triggerSuccessAlert("Audio Master Studio unlocked!")
                 }
             )
             
@@ -490,7 +574,7 @@ public struct ShowcaseCatalogView: View {
                 onDismiss: { handlePaywallDismissal(from: .cyberpunk) },
                 onPurchaseSuccess: {
                     selectedTemplate = nil
-                    triggerSuccessAlert("Root Access Granted!")
+                    triggerSuccessAlert("Neo-Brutalist Pass Activated!")
                 }
             )
             
@@ -531,46 +615,6 @@ public struct ShowcaseCatalogView: View {
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Pro Quality unlocked via Interactive Preview!")
-                }
-            )
-            
-        case .specialOffer:
-            SpecialOfferDownsellPaywallView(
-                manager: manager,
-                onDismiss: { selectedTemplate = nil },
-                onPurchaseSuccess: {
-                    selectedTemplate = nil
-                    triggerSuccessAlert("Lifetime Deal Claimed at 75% OFF!")
-                }
-            )
-            
-        case .flashSale:
-            FlashSaleBannerPaywallView(
-                manager: manager,
-                onDismiss: { selectedTemplate = nil },
-                onPurchaseSuccess: {
-                    selectedTemplate = nil
-                    triggerSuccessAlert("Flash Sale 70% Discount Claimed!")
-                }
-            )
-            
-        case .twoTierUpgrade:
-            TwoTierUpgradeDiscountPaywallView(
-                manager: manager,
-                onDismiss: { selectedTemplate = nil },
-                onPurchaseSuccess: {
-                    selectedTemplate = nil
-                    triggerSuccessAlert("Lifetime VIP Pass Activated!")
-                }
-            )
-            
-        case .scratchToReveal:
-            ScratchToRevealDiscountPaywallView(
-                manager: manager,
-                onDismiss: { selectedTemplate = nil },
-                onPurchaseSuccess: {
-                    selectedTemplate = nil
-                    triggerSuccessAlert("Mystery Discount Voucher Claimed!")
                 }
             )
             
@@ -621,6 +665,127 @@ public struct ShowcaseCatalogView: View {
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("Welcome to the 50,000+ Pro Community!")
+                }
+            )
+            
+        case .aiPromptTokensMeter:
+            AIPromptTokensMeterPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .aiPromptTokensMeter) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Unlimited AI Tokens & Models Unlocked!")
+                }
+            )
+            
+        case .documentScannerPDF:
+            DocumentScannerPDFPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .documentScannerPDF) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Unlimited Document & OCR Scans Unlocked!")
+                }
+            )
+            
+        case .vpnSecurityShield:
+            VPNSecurityShieldPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .vpnSecurityShield) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("UltraShield Military-Grade VPN Activated!")
+                }
+            )
+            
+        case .meditationSleepSoundscape:
+            MeditationSleepSoundscapePaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .meditationSleepSoundscape) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Deep Sleep Sanctuary Unlocked!")
+                }
+            )
+            
+        case .languageVocabMastery:
+            LanguageVocabMasteryPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .languageVocabMastery) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Super Polyglot Fluency Pass Activated!")
+                }
+            )
+            
+        case .travelFlightTracker:
+            TravelFlightTrackerPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .travelFlightTracker) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Global Radar & Flight Alerts Activated!")
+                }
+            )
+            
+        case .retroArcadeGaming:
+            RetroArcadeGamingPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .retroArcadeGaming) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Retro Arcade Pro Pass Activated!")
+                }
+            )
+            
+        case .podcastAudiobookPlayer:
+            PodcastAudiobookPlayerPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .podcastAudiobookPlayer) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Master Audio & Audiobook Suite Unlocked!")
+                }
+            )
+            
+        // --- Discount & Exit-Intent Offers (17) ---
+        case .specialOffer:
+            SpecialOfferDownsellPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Lifetime Deal Claimed at 75% OFF!")
+                }
+            )
+            
+        case .flashSale:
+            FlashSaleBannerPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Flash Sale 70% Discount Claimed!")
+                }
+            )
+            
+        case .twoTierUpgrade:
+            TwoTierUpgradeDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Lifetime VIP Pass Activated!")
+                }
+            )
+            
+        case .scratchToReveal:
+            ScratchToRevealDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Mystery Discount Voucher Claimed!")
                 }
             )
             
@@ -683,6 +848,76 @@ public struct ShowcaseCatalogView: View {
                     triggerSuccessAlert("Zero-Friction Membership Started!")
                 }
             )
+            
+        case .earlyBirdLaunch:
+            EarlyBirdLaunchDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Founding Member Spot Locked In!")
+                }
+            )
+            
+        case .founderPersonalLetter:
+            FounderPersonalLetterDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Thank you for supporting indie development!")
+                }
+            )
+            
+        case .payWhatYouWantSliding:
+            PayWhatYouWantSlidingDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Custom Supporter Tier Confirmed!")
+                }
+            )
+            
+        case .referAFriendUnlock:
+            ReferAFriendUnlockDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("50% Peer Referral Rate Activated!")
+                }
+            )
+            
+        case .seasonalNeonFlash:
+            SeasonalSpringBlackFridayDarkNeonPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("70% Cyber Neon Flash Deal Claimed!")
+                }
+            )
+            
+        case .limitedSpotsRemaining:
+            LimitedSpotsRemainingScarcityPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Reserved Region Rate Guaranteed!")
+                }
+            )
+            
+        case .familySharingSplit:
+            FamilySharingSplitBillingPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("iCloud Family Sharing Pass Activated!")
+                }
+            )
         }
     }
     
@@ -723,6 +958,8 @@ public struct ShowcaseCatalogView: View {
                 
                 Section("About Paywall Studio") {
                     LabeledContent("Total Templates", value: "\(PaywallTemplateType.allCases.count)")
+                    LabeledContent("General Archetypes", value: "\(PaywallTemplateType.allCases.filter { $0.category == .general }.count)")
+                    LabeledContent("Discount & Downsells", value: "\(PaywallTemplateType.allCases.filter { $0.category == .discounts }.count)")
                     LabeledContent("RevenueCat SDK", value: "v5.0+")
                     LabeledContent("Layout Engine", value: "Pinned Bottom Dock")
                 }

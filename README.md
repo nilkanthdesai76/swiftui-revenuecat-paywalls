@@ -6,7 +6,7 @@
 [![RevenueCat SDK v5+](https://img.shields.io/badge/RevenueCat-v5.0%2B-E5484D?style=flat-square&logo=revenuecat&logoColor=white)](https://www.revenuecat.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
-A curated collection of **designer-grade, high-converting SwiftUI paywalls** built specifically for **RevenueCat**. Plug-and-play with real StoreKit purchasing, instant Xcode Canvas previews, automatic discount calculation, and Apple-style trial timelines.
+A curated collection of **40 production-grade, high-converting SwiftUI paywalls** built specifically for **RevenueCat**. Plug-and-play with real StoreKit purchasing, stationary pinned bottom docks, zero text clipping, instant Xcode Canvas previews, automatic discount calculation, interactive micro-animations, and exit-intent downsell offers.
 
 ---
 
@@ -14,67 +14,65 @@ A curated collection of **designer-grade, high-converting SwiftUI paywalls** bui
 
 Most iOS developers face two frustrating choices:
 1. **Default `RevenueCatUI` templates**: Generic, repetitive, and cookie-cutter designs that don't match custom brand identities and convert poorly.
-2. **Building from scratch**: Re-inventing StoreKit 2 error handling, calculating relative discounts (`"SAVE 68%"` vs monthly), parsing introductory trials, and wiring restore buttons across dozens of views.
+2. **Building from scratch**: Re-inventing StoreKit 2 error handling, calculating relative discounts (`"SAVE 68%"` vs monthly), parsing introductory trials, designing interactive gestures, and wiring restore buttons across dozens of views.
 
-**SwiftUI RevenueCat Paywalls** solves this by delivering 7 distinct, battle-tested paywall archetypes engineered for conversion, with a unified `@Observable` state engine and zero-network Xcode preview mock support.
+**SwiftUI RevenueCat Paywalls** solves this by delivering **40 distinct, battle-tested paywall templates** covering every major app niche and monetization strategy — engineered for maximum conversion with a unified `@MainActor` state engine and zero-network Xcode preview mock support.
 
 ---
 
-## 🎨 7 Unique Paywall Archetypes
+## 🎨 40 Comprehensive Paywall Templates
 
-```
-┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-│                               PAYWALL ARCHETYPE CATALOG                                       │
-├──────────────────────────────┬─────────────────────────────┬──────────────────────────────────┤
-│ Archetype                    │ Best App Niche              │ Conversion & UX Triggers         │
-├──────────────────────────────┼─────────────────────────────┼──────────────────────────────────┤
-│ 1. Glassmorphic Bento        │ AI, macOS utilities, tools  │ Spatial frosted blur & 2x2 grid  │
-│ 2. Apple Timeline Trial      │ Subscriptions & general app │ 3-step trial progress + toggle   │
-│ 3. Habit Streak Social Proof │ Fitness, habits, education  │ Gamified ring, milestones & proof│
-│ 4. Feature Comparison Matrix │ Scanners, PDF, SaaS tools   │ Free vs Pro sticky check table   │
-│ 5. Media Waveform Pulse      │ Audio, music, video apps    │ Dynamic oscillating frequency bar│
-│ 6. Cyberpunk Neo-Brutalist   │ Dev tools, crypto, gaming   │ High-contrast neon & tags        │
-│ 7. Compact Sheet Modal       │ In-app feature gates        │ Bottom-drawer with 1-tap checkout│
-└──────────────────────────────┴─────────────────────────────┴──────────────────────────────────┘
-```
+### 📱 General Archetypes (23 Templates)
+1. **Glassmorphic Bento** (`BentoPaywallView`): Spatial frosted glass tiles, 2x2 bento grid, and micro-interaction badges.
+2. **Apple Timeline Trial** (`TimelineTrialPaywallView`): Top-grossing 3-step trial timeline (Today $\to$ Day 5 $\to$ Day 7) with interactive trial toggle switch.
+3. **Habit Streak & Social Proof** (`HabitStreakPaywallView`): Gamified streak flame rings, 30-day milestone roadmap, and 48,000+ member proof.
+4. **Feature Comparison Matrix** (`ComparisonMatrixPaywallView`): Clean Free vs Pro side-by-side comparison table with sticky checkmarks.
+5. **Media Waveform & Pulse** (`MediaWaveformPaywallView`): Animated audio visualizer frequency bars for music, pod, and studio apps.
+6. **Cyberpunk Neo-Brutalist** (`CyberpunkPaywallView`): High-contrast neon green/pink borders, terminal cursor, and developer tech tags.
+7. **Compact Sheet Modal** (`CompactSheetPaywallView`): Bottom drawer with biometric lock shield unlock animation and 1-tap checkout.
+8. **Minimalist Editorial** (`MinimalistEditorialPaywallView`): Luxury serif typography, warm paper tones, and clean magazine quote styling.
+9. **Spatial Immersive** (`SpatialImmersivePaywallView`): visionOS ambient aurora gradients, 3D depth, and floating holographic tiles.
+10. **Before/After Drag Slider** (`BeforeAfterSliderPaywallView`): Interactive split-screen comparison slider showcasing raw vs pro output.
+11. **Video Hero Cinematic** (`VideoHeroCinematicPaywallView`): Hollywood 4K ProRes dark aesthetic with tech specs and studio master reel.
+12. **Fitness Rings Metrics** (`FitnessRingsMetricsPaywallView`): Apple Watch concentric activity rings and personalized daily calorie targets.
+13. **Quiz Results Personalized** (`QuizResultsPersonalizedPaywallView`): Onboarding quiz trajectory roadmap with 94% algorithm success score.
+14. **Finance Wealth Clean** (`FinanceWealthCleanPaywallView`): Bloomberg & Copilot wealth growth simulator with AES-256 bank encryption.
+15. **Social Proof Wall** (`SocialProofWallPaywallView`): 4.9-star ratings banner and verified App Store subscriber testimonials.
+16. **AI Prompt Quota & Models** (`AIPromptTokensMeterPaywallView`): Live quota depletion meter, model badges (GPT-4o, Claude 3.5), and speed indicators.
+17. **Scanner & PDF OCR Studio** (`DocumentScannerPDFPaywallView`): Moving cyan laser beam scanner, real-time OCR text highlight, and PDF vault.
+18. **VPN & Privacy UltraShield** (`VPNSecurityShieldPaywallView`): 3D cybersecurity shield with animated ping radar & 90+ global server nodes.
+19. **Meditation & Sleep Soundscape** (`MeditationSleepSoundscapePaywallView`): Twilight night sky with animated breathing circle & interactive sound mixer.
+20. **Language & Polyglot Mastery** (`LanguageVocabMasteryPaywallView`): 3D vocabulary flashcard flip, CEFR fluency ladder (A1-C2), and AI accent coach.
+21. **Flight Radar & Travel Pass** (`TravelFlightTrackerPaywallView`): Perforated boarding pass (JFK-LHR), flight progress bar, and altitude telemetry.
+22. **Retro Arcade Game Pass** (`RetroArcadeGamingPaywallView`): 8-bit CRT arcade scanlines, blinking INSERT COIN credit, and 60 FPS rewind.
+23. **Master Audio & Podcast Suite** (`PodcastAudiobookPlayerPaywallView`): Rotating vinyl record player, word-by-word AI transcripts, and silence trimmer.
 
-### 1. The Glassmorphic Bento (`BentoPaywallView`)
-- Spatial glass aesthetic inspired by visionOS.
-- 2x2 interactive Bento grid highlighting premium capabilities with micro-interaction badges.
-- Horizontal plan selector cards with dynamic discount tags and weekly breakdown (`"$0.77 / week"`).
+### 🎁 Discount & Exit-Intent Offer Designs (17 Templates)
+1. **Exit-Offer Special Downsell** (`SpecialOfferDownsellPaywallView`): Exit-intent 1-offering deal with live ticking timer & 75% OFF badge.
+2. **24H Flash Sale Event** (`FlashSaleBannerPaywallView`): Urgency marquee ticker, claim meter & instant voucher coupon code.
+3. **Lifetime VIP Value Anchor** (`TwoTierUpgradeDiscountPaywallView`): Value math breakdown comparing recurring annual vs lifetime pass.
+4. **Scratch & Reveal Mystery Deal** (`ScratchToRevealDiscountPaywallView`): Gamified scratch-off mystery voucher with celebratory confetti particles.
+5. **Empathetic Win-Back Offer** (`WinBackRetentionPaywallView`): Empathetic indie developer 50% community grant for price-sensitive users.
+6. **Spin to Win Lucky Wheel** (`SpinToWinWheelDiscountPaywallView`): Interactive spinning fortune wheel landing on 70% off with haptic bursts.
+7. **Holiday Seasonal Gift Box** (`HolidaySeasonalGiftDiscountPaywallView`): Holiday seasonal gift unboxing with festive ribbon bounce.
+8. **Student & Creator Grant** (`StudentCreatorGrantDiscountPaywallView`): 60% academic & creator aid grant with verified educational badge.
+9. **Abandoned Cart iOS Alert** (`AbandonedCartNotificationDiscountPaywallView`): Simulated iOS lockscreen push alert from founder with $20 credit voucher.
+10. **Low-Friction Trial Extension** (`AnnualVsMonthlyFrictionKillerPaywallView`): Risk-reversal low installment terms with zero upfront friction.
+11. **Early Bird Launch (#500 Spots)** (`EarlyBirdLaunchDiscountPaywallView`): Founding member certificate #384 of 500 with lifetime grandfathered rate.
+12. **Founder's Personal Letter (50%)** (`FounderPersonalLetterDiscountPaywallView`): Heartfelt personal note & signature from solo creator with 50% discount.
+13. **Pay-What-You-Want Scale** (`PayWhatYouWantSlidingDiscountPaywallView`): Customizable contribution slider ($19 - $99) supporting open-source software.
+14. **Refer a Friend 50/50 Pass** (`ReferAFriendUnlockDiscountPaywallView`): Viral 2-way referral coupon with copyable code FRIEND50-VIP and friend avatars.
+15. **Neon Flash Cyber Sale (70%)** (`SeasonalSpringBlackFridayDarkNeonPaywallView`): High-octane cyberpunk neon mega flash sale with live countdown clock.
+16. **Timezone Hold Reservation (2 Left)** (`LimitedSpotsRemainingScarcityPaywallView`): Geo-targeted capacity hold timer reserving slot #92 with lock-in guarantee.
+17. **iCloud Family Sharing Split ($0.83/mo)** (`FamilySharingSplitBillingPaywallView`): Interactive family stepper calculating split price down to $0.83 / mo / member.
 
-### 2. The Apple Timeline Trial (`TimelineTrialPaywallView`)
-- **The #1 highest-converting layout in top-grossing apps**.
-- Interactive 3-step visual timeline:
-  - `Today`: Instant access, $0.00 charged.
-  - `Day 5`: Friendly reminder notification.
-  - `Day 7`: Annual billing starts.
-- "Enable Free Trial" toggle and risk-free guarantee disclaimer.
+---
 
-### 3. The Habit & Streak Social Proof (`HabitStreakPaywallView`)
-- Gamified streak flame ring (`"Join 48,000+ members"`).
-- Milestone roadmap: `Day 1 (Kickoff)` $\to$ `Day 14 (Lock-In)` $\to$ `Day 30 (Mastery)`.
-- Verified App Store testimonial quotes and warm high-energy colors.
+## 📐 Layout Architecture: Pinned Bottom Dock & Zero Trimming
 
-### 4. The Feature Comparison Matrix (`ComparisonMatrixPaywallView`)
-- Clean Free vs Pro side-by-side comparison table.
-- Clear checkmarks and value indicators for unlocked tiers.
-- Quick Annual vs Monthly toggle pill with `"SAVE 68%"` ribbon.
-
-### 5. The Waveform / Media Pulse (`MediaWaveformPaywallView`)
-- Real-time animated audio visualizer spectrum that pulses and breathes.
-- Dark studio aesthetic with cyan and electric violet neon glow.
-- Studio master-track plan cards tailored for creative & audio apps.
-
-### 6. The Cyberpunk Neo-Brutalist (`CyberpunkPaywallView`)
-- High-contrast neon green (`#10B981`) and hot pink borders.
-- Monospaced tags (`[SYSTEM: READY_FOR_UPGRADE]`, `> EXECUTE_UPGRADE`).
-- Bold brutalist drop-shadows tailored for developer utilities, crypto, and terminal apps.
-
-### 7. The Compact Sheet Modal (`CompactSheetPaywallView`)
-- Designed as a bottom drawer / half-sheet for gated features (e.g., export limit hit).
-- Biometric lock shield icon animation.
-- Fast 1-tap Apple Pay style checkout button.
+Every template adheres strictly to iOS design standards:
+- **Stationary Pinned Bottom Dock**: Plan cards, primary CTA, and restore/terms legal footers stay fixed at the bottom while rich top visual features scroll independently.
+- **Zero Text Clipping**: Full-width vertical cards with `.lineLimit(1)` and `.minimumScaleFactor(0.85)` ensuring plans and prices never truncate or wrap awkwardly on any iPhone screen size (mini through Pro Max).
 
 ---
 
@@ -135,14 +133,14 @@ No RevenueCat account or API key needed to test and iterate on designs! Pass `is
 
 ---
 
-## 📱 Running the Interactive Showcase App
+## 📱 Interactive Showcase App
 
 A complete iOS showcase catalog application is included in `PaywallShowcase`:
 
 1. Open `PaywallShowcase/PaywallShowcase.xcodeproj` in Xcode.
-2. Select any iOS Simulator (e.g. **iPhone 17 Pro** or **iPhone 18 Pro**).
+2. Select any iOS Simulator (e.g. **iPhone 17**, **iPhone 17 Pro**, or **iPhone 18 Pro**).
 3. Press **`Cmd + R`** to run.
-4. Browse and tap through all 7 paywalls, test real-time trial switches, haptic responses, and toggle between Mock Mode and Live RevenueCat API Key mode!
+4. Browse all 40 paywalls categorized into **All (40)**, **General Archetypes (23)**, and **Discount Offers (17)**!
 
 ---
 
