@@ -42,7 +42,7 @@ public struct CompactSheetPaywallView: View {
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.secondary)
                         .padding(8)
-                        .background(Color(UIColor.secondarySystemBackground), in: Circle())
+                        .background(Color.appSecondarySystemBackground, in: Circle())
                 }
             }
             .padding(.horizontal, 20)
@@ -104,7 +104,7 @@ public struct CompactSheetPaywallView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color(UIColor.secondarySystemBackground))
+                                .fill(isSelected ? configuration.primaryThemeColor.opacity(0.1) : Color.appSecondarySystemBackground)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                                         .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)
@@ -156,7 +156,7 @@ public struct CompactSheetPaywallView: View {
             )
             .padding(.bottom, 16)
         }
-        .background(Color(UIColor.systemBackground))
+        .background(Color.appSystemBackground)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .alert("Notice", isPresented: $manager.showErrorAlert) {
             Button("OK", role: .cancel) {}

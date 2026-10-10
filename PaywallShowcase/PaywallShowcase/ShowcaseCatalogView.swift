@@ -154,7 +154,7 @@ public struct ShowcaseCatalogView: View {
         .padding(18)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .fill(Color.appSecondaryGroupedBackground)
                 .shadow(color: Color.black.opacity(0.04), radius: 10, y: 4)
         )
     }
@@ -189,7 +189,7 @@ public struct ShowcaseCatalogView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .fill(Color.appSecondaryGroupedBackground)
         )
     }
     
@@ -243,7 +243,7 @@ public struct ShowcaseCatalogView: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+                    .fill(Color.appSecondaryGroupedBackground)
                     .shadow(color: Color.black.opacity(0.03), radius: 8, y: 3)
             )
         }

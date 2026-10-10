@@ -98,7 +98,7 @@ public struct TimelineTrialPaywallView: View {
     // MARK: - Background
     
     private var backgroundView: some View {
-        Color(UIColor.systemGroupedBackground)
+        Color.appSystemGroupedBackground
             .ignoresSafeArea()
             .overlay(
                 RadialGradient(
@@ -159,7 +159,7 @@ public struct TimelineTrialPaywallView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .fill(Color.appSecondaryGroupedBackground)
                 .shadow(color: Color.black.opacity(0.04), radius: 8, y: 3)
         )
     }
@@ -203,7 +203,7 @@ public struct TimelineTrialPaywallView: View {
                 .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(UIColor.secondarySystemGroupedBackground))
+                        .fill(Color.appSecondaryGroupedBackground)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .stroke(configuration.primaryThemeColor.opacity(0.4), lineWidth: 1.5)

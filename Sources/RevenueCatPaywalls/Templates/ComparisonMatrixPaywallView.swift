@@ -28,7 +28,7 @@ public struct ComparisonMatrixPaywallView: View {
     
     public var body: some View {
         ZStack {
-            Color(UIColor.systemBackground).ignoresSafeArea()
+            Color.appSystemBackground.ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Header
@@ -123,7 +123,7 @@ public struct ComparisonMatrixPaywallView: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(Color(UIColor.secondarySystemBackground))
+            .background(Color.appSecondarySystemBackground)
             
             Divider()
             
@@ -153,7 +153,7 @@ public struct ComparisonMatrixPaywallView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 11)
-                .background(index.isMultiple(of: 2) ? Color(UIColor.systemBackground) : Color(UIColor.secondarySystemBackground).opacity(0.4))
+                .background(index.isMultiple(of: 2) ? Color.appSystemBackground : Color.appSecondarySystemBackground.opacity(0.4))
                 
                 if index < comparisonRows.count - 1 {
                     Divider()
@@ -202,7 +202,7 @@ public struct ComparisonMatrixPaywallView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.08) : Color(UIColor.secondarySystemBackground))
+                            .fill(isSelected ? configuration.primaryThemeColor.opacity(0.08) : Color.appSecondarySystemBackground)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                                     .stroke(isSelected ? configuration.primaryThemeColor : Color.clear, lineWidth: 2)

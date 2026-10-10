@@ -36,7 +36,8 @@ public enum PricingCalculator {
                 isBestValue = true
                 if monthlyPrice > 0 {
                     let annualPerMonth = product.price / 12
-                    let savingsPercent = Int(round((1.0 - (annualPerMonth / monthlyPrice).doubleValue) * 100.0))
+                    let ratio = NSDecimalNumber(decimal: annualPerMonth / monthlyPrice).doubleValue
+                    let savingsPercent = Int(round((1.0 - ratio) * 100.0))
                     if savingsPercent > 5 {
                         badgeText = "SAVE \(savingsPercent)%"
                     } else {
