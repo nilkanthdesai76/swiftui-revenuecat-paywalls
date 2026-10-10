@@ -2,15 +2,15 @@ import SwiftUI
 import RevenueCatPaywalls
 
 public enum PaywallCategory: String, CaseIterable, Identifiable {
-    case all = "All (15)"
-    case general = "General Archetypes (10)"
-    case discounts = "Discount Offers (5)"
+    case all = "All (25)"
+    case general = "General Archetypes (15)"
+    case discounts = "Discount Offers (10)"
     
     public var id: String { rawValue }
 }
 
 public enum PaywallTemplateType: String, CaseIterable, Identifiable {
-    // General Archetypes
+    // General Archetypes (15)
     case bento = "Glassmorphic Bento"
     case timeline = "Apple Timeline Trial"
     case habitStreak = "Habit Streak & Social Proof"
@@ -21,21 +21,31 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
     case minimalistEditorial = "Minimalist Editorial"
     case spatialImmersive = "Spatial Immersive"
     case beforeAfterSlider = "Before/After Drag Slider"
+    case videoHeroCinematic = "Video Hero Cinematic"
+    case fitnessRingsMetrics = "Fitness Rings Metrics"
+    case quizResultsPersonalized = "Quiz Results Personalized"
+    case financeWealthClean = "Finance Wealth Clean"
+    case socialProofWall = "Social Proof Wall"
     
-    // Discount & Exit-Intent Offer Designs
+    // Discount & Exit-Intent Offer Designs (10)
     case specialOffer = "Exit-Offer Special Downsell"
     case flashSale = "24H Flash Sale Event"
     case twoTierUpgrade = "Lifetime VIP Value Anchor"
     case scratchToReveal = "Scratch & Reveal Mystery Deal"
     case winBackRetention = "Empathetic Win-Back Offer"
+    case spinToWinWheel = "Spin to Win Lucky Wheel"
+    case holidaySeasonalGift = "Holiday Seasonal Gift Box"
+    case studentCreatorGrant = "Student & Creator Grant"
+    case abandonedCartNotification = "Abandoned Cart iOS Alert"
+    case annualVsMonthlyFrictionKiller = "Low-Friction Trial Extension"
     
     public var id: String { rawValue }
     
     public var category: PaywallCategory {
         switch self {
-        case .bento, .timeline, .habitStreak, .comparisonMatrix, .mediaWaveform, .cyberpunk, .compactSheet, .minimalistEditorial, .spatialImmersive, .beforeAfterSlider:
+        case .bento, .timeline, .habitStreak, .comparisonMatrix, .mediaWaveform, .cyberpunk, .compactSheet, .minimalistEditorial, .spatialImmersive, .beforeAfterSlider, .videoHeroCinematic, .fitnessRingsMetrics, .quizResultsPersonalized, .financeWealthClean, .socialProofWall:
             return .general
-        case .specialOffer, .flashSale, .twoTierUpgrade, .scratchToReveal, .winBackRetention:
+        case .specialOffer, .flashSale, .twoTierUpgrade, .scratchToReveal, .winBackRetention, .spinToWinWheel, .holidaySeasonalGift, .studentCreatorGrant, .abandonedCartNotification, .annualVsMonthlyFrictionKiller:
             return .discounts
         }
     }
@@ -52,11 +62,21 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .minimalistEditorial: return "Luxury editorial serif typography, magazine quotes & clean checklist"
         case .spatialImmersive: return "visionOS ambient aurora gradients, 3D depth & holographic tiles"
         case .beforeAfterSlider: return "Interactive draggable split-screen visualizer comparing Free vs Pro"
+        case .videoHeroCinematic: return "Hollywood 4K ProRes dark aesthetic with tech specs & studio master reel"
+        case .fitnessRingsMetrics: return "Apple Watch concentric activity rings & personalized daily calorie targets"
+        case .quizResultsPersonalized: return "Onboarding quiz trajectory roadmap with 94% algorithm success score"
+        case .financeWealthClean: return "Bloomberg & Copilot wealth growth simulator with AES-256 bank encryption"
+        case .socialProofWall: return "4.9-star ratings banner & verified App Store subscriber testimonials"
         case .specialOffer: return "Exit-intent 1-offering deal with live ticking timer & 75% OFF badge"
         case .flashSale: return "Urgency marquee ticker, claim meter & instant voucher coupon code"
         case .twoTierUpgrade: return "Value math breakdown comparing recurring annual vs lifetime pass"
         case .scratchToReveal: return "Gamified scratch-off mystery voucher with celebratory confetti particles"
         case .winBackRetention: return "Empathetic indie developer 50% community grant for price-sensitive users"
+        case .spinToWinWheel: return "Interactive spinning fortune wheel landing on 70% off with haptic bursts"
+        case .holidaySeasonalGift: return "Holiday seasonal gift unboxing with festive red & pine green ribbon bounce"
+        case .studentCreatorGrant: return "60% academic & creator aid grant with verified educational badge"
+        case .abandonedCartNotification: return "Simulated iOS lockscreen push alert from founder with $20 credit voucher"
+        case .annualVsMonthlyFrictionKiller: return "Risk-reversal low installment terms with zero upfront friction"
         }
     }
     
@@ -72,11 +92,21 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .minimalistEditorial: return "text.book.closed.fill"
         case .spatialImmersive: return "visionpro"
         case .beforeAfterSlider: return "slider.horizontal.below.rectangle"
+        case .videoHeroCinematic: return "film.fill"
+        case .fitnessRingsMetrics: return "figure.run"
+        case .quizResultsPersonalized: return "chart.xyaxis.line"
+        case .financeWealthClean: return "chart.line.uptrend.xyaxis"
+        case .socialProofWall: return "star.bubble.fill"
         case .specialOffer: return "tag.fill"
         case .flashSale: return "bolt.fill"
         case .twoTierUpgrade: return "crown.fill"
         case .scratchToReveal: return "gift.fill"
         case .winBackRetention: return "heart.fill"
+        case .spinToWinWheel: return "arrow.triangle.2.circlepath"
+        case .holidaySeasonalGift: return "gift.circle.fill"
+        case .studentCreatorGrant: return "graduationcap.fill"
+        case .abandonedCartNotification: return "bell.badge.fill"
+        case .annualVsMonthlyFrictionKiller: return "checkmark.shield.fill"
         }
     }
     
@@ -92,11 +122,21 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .minimalistEditorial: return Color(red: 0.85, green: 0.72, blue: 0.52)
         case .spatialImmersive: return Color(red: 0.40, green: 0.20, blue: 0.95)
         case .beforeAfterSlider: return Color(red: 0.38, green: 0.35, blue: 0.98)
+        case .videoHeroCinematic: return Color(red: 0.95, green: 0.25, blue: 0.35)
+        case .fitnessRingsMetrics: return Color(red: 0.98, green: 0.15, blue: 0.35)
+        case .quizResultsPersonalized: return Color(red: 0.25, green: 0.55, blue: 0.95)
+        case .financeWealthClean: return Color(red: 0.10, green: 0.65, blue: 0.40)
+        case .socialProofWall: return Color(red: 0.95, green: 0.40, blue: 0.15)
         case .specialOffer: return Color(red: 0.95, green: 0.25, blue: 0.35)
         case .flashSale: return Color(red: 0.95, green: 0.25, blue: 0.25)
         case .twoTierUpgrade: return Color(red: 0.95, green: 0.65, blue: 0.15)
         case .scratchToReveal: return Color(red: 0.95, green: 0.70, blue: 0.15)
         case .winBackRetention: return Color(red: 0.20, green: 0.65, blue: 0.50)
+        case .spinToWinWheel: return Color(red: 1.0, green: 0.65, blue: 0.0)
+        case .holidaySeasonalGift: return Color(red: 0.85, green: 0.15, blue: 0.20)
+        case .studentCreatorGrant: return Color(red: 0.15, green: 0.45, blue: 0.95)
+        case .abandonedCartNotification: return Color(red: 0.12, green: 0.55, blue: 0.95)
+        case .annualVsMonthlyFrictionKiller: return Color(red: 0.10, green: 0.80, blue: 0.55)
         }
     }
     
@@ -112,11 +152,21 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .minimalistEditorial: return "Luxury Serif"
         case .spatialImmersive: return "visionOS 3D"
         case .beforeAfterSlider: return "Interactive Drag"
+        case .videoHeroCinematic: return "ProRes Cinema"
+        case .fitnessRingsMetrics: return "Activity Rings"
+        case .quizResultsPersonalized: return "Quiz Roadmap"
+        case .financeWealthClean: return "Wealth Growth"
+        case .socialProofWall: return "Wall of Love"
         case .specialOffer: return "Exit Downsell"
         case .flashSale: return "24H Urgency"
         case .twoTierUpgrade: return "Value Math"
         case .scratchToReveal: return "Mystery Confetti"
         case .winBackRetention: return "Community Grant"
+        case .spinToWinWheel: return "Lucky Wheel"
+        case .holidaySeasonalGift: return "Seasonal Gift"
+        case .studentCreatorGrant: return "Edu Aid"
+        case .abandonedCartNotification: return "iOS Push Alert"
+        case .annualVsMonthlyFrictionKiller: return "Zero Friction"
         }
     }
 }
@@ -524,6 +574,56 @@ public struct ShowcaseCatalogView: View {
                 }
             )
             
+        case .videoHeroCinematic:
+            VideoHeroCinematicPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .videoHeroCinematic) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Cinema Pro Master Studio Unlocked!")
+                }
+            )
+            
+        case .fitnessRingsMetrics:
+            FitnessRingsMetricsPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .fitnessRingsMetrics) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Fitness Rings Pro Activated!")
+                }
+            )
+            
+        case .quizResultsPersonalized:
+            QuizResultsPersonalizedPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .quizResultsPersonalized) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Personalized Plan Roadmap Claimed!")
+                }
+            )
+            
+        case .financeWealthClean:
+            FinanceWealthCleanPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .financeWealthClean) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Wealth Pro Dashboard Activated!")
+                }
+            )
+            
+        case .socialProofWall:
+            SocialProofWallPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .socialProofWall) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Welcome to the 50,000+ Pro Community!")
+                }
+            )
+            
         case .winBackRetention:
             WinBackRetentionPaywallView(
                 manager: manager,
@@ -531,6 +631,56 @@ public struct ShowcaseCatalogView: View {
                 onPurchaseSuccess: {
                     selectedTemplate = nil
                     triggerSuccessAlert("50% Community Grant Accepted!")
+                }
+            )
+            
+        case .spinToWinWheel:
+            SpinToWinWheelDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("70% Lucky Wheel Discount Claimed!")
+                }
+            )
+            
+        case .holidaySeasonalGift:
+            HolidaySeasonalGiftDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Holiday Gift Pass Unwrapped!")
+                }
+            )
+            
+        case .studentCreatorGrant:
+            StudentCreatorGrantDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Student & Creator Aid Grant Claimed!")
+                }
+            )
+            
+        case .abandonedCartNotification:
+            AbandonedCartNotificationDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("$20 Reserved Voucher Claimed!")
+                }
+            )
+            
+        case .annualVsMonthlyFrictionKiller:
+            AnnualVsMonthlyFrictionKillerPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Zero-Friction Membership Started!")
                 }
             )
         }
