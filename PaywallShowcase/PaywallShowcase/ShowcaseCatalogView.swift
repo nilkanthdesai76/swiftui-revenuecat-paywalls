@@ -1,7 +1,16 @@
 import SwiftUI
 import RevenueCatPaywalls
 
+public enum PaywallCategory: String, CaseIterable, Identifiable {
+    case all = "All (15)"
+    case general = "General Archetypes (10)"
+    case discounts = "Discount Offers (5)"
+    
+    public var id: String { rawValue }
+}
+
 public enum PaywallTemplateType: String, CaseIterable, Identifiable {
+    // General Archetypes
     case bento = "Glassmorphic Bento"
     case timeline = "Apple Timeline Trial"
     case habitStreak = "Habit Streak & Social Proof"
@@ -9,9 +18,27 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
     case mediaWaveform = "Media Waveform & Pulse"
     case cyberpunk = "Cyberpunk Neo-Brutalist"
     case compactSheet = "Compact Sheet Modal"
+    case minimalistEditorial = "Minimalist Editorial"
+    case spatialImmersive = "Spatial Immersive"
+    case beforeAfterSlider = "Before/After Drag Slider"
+    
+    // Discount & Exit-Intent Offer Designs
     case specialOffer = "Exit-Offer Special Downsell"
+    case flashSale = "24H Flash Sale Event"
+    case twoTierUpgrade = "Lifetime VIP Value Anchor"
+    case scratchToReveal = "Scratch & Reveal Mystery Deal"
+    case winBackRetention = "Empathetic Win-Back Offer"
     
     public var id: String { rawValue }
+    
+    public var category: PaywallCategory {
+        switch self {
+        case .bento, .timeline, .habitStreak, .comparisonMatrix, .mediaWaveform, .cyberpunk, .compactSheet, .minimalistEditorial, .spatialImmersive, .beforeAfterSlider:
+            return .general
+        case .specialOffer, .flashSale, .twoTierUpgrade, .scratchToReveal, .winBackRetention:
+            return .discounts
+        }
+    }
     
     public var subtitle: String {
         switch self {
@@ -22,7 +49,14 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .mediaWaveform: return "Tap-reactive audio equalizer visualizer & studio master tracks"
         case .cyberpunk: return "Laser scanner line & terminal text cursor for dev/crypto tools"
         case .compactSheet: return "Biometric padlock unlock animation with fast 1-tap checkout"
+        case .minimalistEditorial: return "Luxury editorial serif typography, magazine quotes & clean checklist"
+        case .spatialImmersive: return "visionOS ambient aurora gradients, 3D depth & holographic tiles"
+        case .beforeAfterSlider: return "Interactive draggable split-screen visualizer comparing Free vs Pro"
         case .specialOffer: return "Exit-intent 1-offering deal with live ticking timer & 75% OFF badge"
+        case .flashSale: return "Urgency marquee ticker, claim meter & instant voucher coupon code"
+        case .twoTierUpgrade: return "Value math breakdown comparing recurring annual vs lifetime pass"
+        case .scratchToReveal: return "Gamified scratch-off mystery voucher with celebratory confetti particles"
+        case .winBackRetention: return "Empathetic indie developer 50% community grant for price-sensitive users"
         }
     }
     
@@ -35,7 +69,14 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .mediaWaveform: return "waveform"
         case .cyberpunk: return "terminal.fill"
         case .compactSheet: return "lock.shield.fill"
+        case .minimalistEditorial: return "text.book.closed.fill"
+        case .spatialImmersive: return "visionpro"
+        case .beforeAfterSlider: return "slider.horizontal.below.rectangle"
         case .specialOffer: return "tag.fill"
+        case .flashSale: return "bolt.fill"
+        case .twoTierUpgrade: return "crown.fill"
+        case .scratchToReveal: return "gift.fill"
+        case .winBackRetention: return "heart.fill"
         }
     }
     
@@ -48,7 +89,14 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .mediaWaveform: return Color(red: 0.02, green: 0.85, blue: 0.83)
         case .cyberpunk: return Color(red: 0.1, green: 0.95, blue: 0.55)
         case .compactSheet: return Color(red: 0.18, green: 0.65, blue: 0.45)
+        case .minimalistEditorial: return Color(red: 0.85, green: 0.72, blue: 0.52)
+        case .spatialImmersive: return Color(red: 0.40, green: 0.20, blue: 0.95)
+        case .beforeAfterSlider: return Color(red: 0.38, green: 0.35, blue: 0.98)
         case .specialOffer: return Color(red: 0.95, green: 0.25, blue: 0.35)
+        case .flashSale: return Color(red: 0.95, green: 0.25, blue: 0.25)
+        case .twoTierUpgrade: return Color(red: 0.95, green: 0.65, blue: 0.15)
+        case .scratchToReveal: return Color(red: 0.95, green: 0.70, blue: 0.15)
+        case .winBackRetention: return Color(red: 0.20, green: 0.65, blue: 0.50)
         }
     }
     
@@ -61,12 +109,20 @@ public enum PaywallTemplateType: String, CaseIterable, Identifiable {
         case .mediaWaveform: return "Interactive Audio"
         case .cyberpunk: return "Neo-Brutalism"
         case .compactSheet: return "Biometric Sheet"
+        case .minimalistEditorial: return "Luxury Serif"
+        case .spatialImmersive: return "visionOS 3D"
+        case .beforeAfterSlider: return "Interactive Drag"
         case .specialOffer: return "Exit Downsell"
+        case .flashSale: return "24H Urgency"
+        case .twoTierUpgrade: return "Value Math"
+        case .scratchToReveal: return "Mystery Confetti"
+        case .winBackRetention: return "Community Grant"
         }
     }
 }
 
 public struct ShowcaseCatalogView: View {
+    @State private var selectedCategory: PaywallCategory = .all
     @State private var selectedTemplate: PaywallTemplateType?
     @State private var showDownsellSheet: Bool = false
     @State private var enableDownsellOnExit: Bool = true
@@ -77,6 +133,14 @@ public struct ShowcaseCatalogView: View {
     @State private var showSuccessAlert: Bool = false
     
     public init() {}
+    
+    private var filteredTemplates: [PaywallTemplateType] {
+        switch selectedCategory {
+        case .all: return PaywallTemplateType.allCases
+        case .general: return PaywallTemplateType.allCases.filter { $0.category == .general }
+        case .discounts: return PaywallTemplateType.allCases.filter { $0.category == .discounts }
+        }
+    }
     
     public var body: some View {
         NavigationStack {
@@ -91,9 +155,17 @@ public struct ShowcaseCatalogView: View {
                     // Mode Switcher Banner
                     modeStatusCard
                     
+                    // Category Filter Segmented Control
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(PaywallCategory.allCases) { cat in
+                            Text(cat.rawValue).tag(cat)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    
                     // Template Gallery Cards
                     VStack(spacing: 14) {
-                        ForEach(PaywallTemplateType.allCases) { template in
+                        ForEach(filteredTemplates) { template in
                             templateCard(template)
                         }
                     }
@@ -382,6 +454,36 @@ public struct ShowcaseCatalogView: View {
                 }
             )
             
+        case .minimalistEditorial:
+            MinimalistEditorialPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .minimalistEditorial) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Editorial Membership started successfully!")
+                }
+            )
+            
+        case .spatialImmersive:
+            SpatialImmersivePaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .spatialImmersive) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Spatial Studio Access unlocked!")
+                }
+            )
+            
+        case .beforeAfterSlider:
+            BeforeAfterSliderPaywallView(
+                manager: manager,
+                onDismiss: { handlePaywallDismissal(from: .beforeAfterSlider) },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Pro Quality unlocked via Interactive Preview!")
+                }
+            )
+            
         case .specialOffer:
             SpecialOfferDownsellPaywallView(
                 manager: manager,
@@ -391,14 +493,54 @@ public struct ShowcaseCatalogView: View {
                     triggerSuccessAlert("Lifetime Deal Claimed at 75% OFF!")
                 }
             )
+            
+        case .flashSale:
+            FlashSaleBannerPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Flash Sale 70% Discount Claimed!")
+                }
+            )
+            
+        case .twoTierUpgrade:
+            TwoTierUpgradeDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Lifetime VIP Pass Activated!")
+                }
+            )
+            
+        case .scratchToReveal:
+            ScratchToRevealDiscountPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("Mystery Discount Voucher Claimed!")
+                }
+            )
+            
+        case .winBackRetention:
+            WinBackRetentionPaywallView(
+                manager: manager,
+                onDismiss: { selectedTemplate = nil },
+                onPurchaseSuccess: {
+                    selectedTemplate = nil
+                    triggerSuccessAlert("50% Community Grant Accepted!")
+                }
+            )
         }
     }
     
     private func handlePaywallDismissal(from template: PaywallTemplateType) {
         selectedTemplate = nil
         
-        // If exit downsell is enabled and not closing downsell itself, present the special offer!
-        if enableDownsellOnExit && template != .specialOffer {
+        // If exit downsell is enabled and not closing a discount offer itself, present the special offer!
+        if enableDownsellOnExit && template.category != .discounts {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                 showDownsellSheet = true
             }
