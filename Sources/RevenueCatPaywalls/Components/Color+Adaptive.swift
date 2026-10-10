@@ -46,3 +46,10 @@ public extension Color {
         #endif
     }
 }
+
+public extension ShapeStyle where Self == Color {
+    static var appSystemBackground: Color { Color.appSystemBackground }
+    static var appSecondarySystemBackground: Color { Color.appSecondarySystemBackground }
+    static var appSystemGroupedBackground: Color { Color.appSystemGroupedBackground }
+    static var appSecondaryGroupedBackground: Color { Color.appSecondaryGroupedBackground }
+}

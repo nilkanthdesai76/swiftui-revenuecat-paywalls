@@ -41,8 +41,8 @@ public struct CompactSheetPaywallView: View {
                     Image(systemName: "xmark")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.secondary)
-                        .padding(8)
-                        .background(Color.appSecondarySystemBackground, in: Circle())
+                        .frame(width: 30, height: 30)
+                        .background(.ultraThinMaterial, in: Circle())
                 }
             }
             .padding(.horizontal, 20)
